@@ -806,7 +806,7 @@ const Transactionslist = () => {
                                                             <HiDotsVertical className="w-4 h-4 text-gray-500" />
                                                         </button>
                                                     </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
+                                                    {/* <DropdownMenuContent align="end">
                                                         <DropdownMenuItem className="flex items-center gap-2">
                                                             <CiEdit className="w-4 h-4" />
                                                             <span>
@@ -817,7 +817,7 @@ const Transactionslist = () => {
                                                             <CiTrash className="w-4 h-4" />
                                                             <span>Удалить</span>
                                                         </DropdownMenuItem>
-                                                    </DropdownMenuContent>
+                                                    </DropdownMenuContent> */}
                                                 </DropdownMenu>
                                             </TableCell>
                                         </TableRow>
