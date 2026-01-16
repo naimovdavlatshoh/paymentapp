@@ -31,12 +31,12 @@ import { ProgressAuto } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
+    // DropdownMenuContent,
+    // DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { HiDotsVertical } from "react-icons/hi";
-import { CiEdit, CiTrash } from "react-icons/ci";
+// import { CiEdit, CiTrash } from "react-icons/ci";
 import { Calendar } from "@/components/ui/calendar";
 import { IoMdAdd, IoMdRemove, IoMdSwap } from "react-icons/io";
 import DepositModal from "./DepositModal";
