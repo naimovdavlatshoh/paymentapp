@@ -112,26 +112,26 @@ const Login = () => {
                         </div>
 
                         {/* Demo Info Banner */}
-                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 flex items-start space-x-3">
+                        <div className="bg-blue-50  border border-blue-200  rounded-xl p-4 flex items-start space-x-3">
                             <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                                 <span className="text-white text-xs font-bold">
                                     i
                                 </span>
                             </div>
-                            <p className="text-sm text-blue-800 dark:text-blue-300">
+                            <p className="text-sm text-blue-800 ">
                                 Используйте demo@admin.com с паролем @2Admin
                             </p>
                         </div>
 
                         {/* Error Message */}
                         {error && (
-                            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 flex items-start space-x-3">
+                            <div className="bg-red-50  border border-red-200 rounded-xl p-4 flex items-start space-x-3">
                                 <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                                     <span className="text-white text-xs font-bold">
                                         !
                                     </span>
                                 </div>
-                                <p className="text-sm text-red-800 dark:text-red-300">
+                                <p className="text-sm text-red-800 ">
                                     {error}
                                 </p>
                             </div>
@@ -142,7 +142,7 @@ const Login = () => {
                             <div className="space-y-2">
                                 <Label
                                     htmlFor="email"
-                                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                    className="text-sm font-medium text-gray-700 "
                                 >
                                     Email адрес
                                 </Label>
@@ -152,7 +152,7 @@ const Login = () => {
                                     placeholder="admin"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="h-12 rounded-xl border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-mainbg focus:border-mainbg transition-all duration-200"
+                                    className="h-12 rounded-xl border-gray-200  focus:ring-2 focus:ring-mainbg focus:border-mainbg transition-all duration-200"
                                     required
                                 />
                             </div>
@@ -162,13 +162,13 @@ const Login = () => {
                                 <div className="flex items-center justify-between">
                                     <Label
                                         htmlFor="password"
-                                        className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        className="text-sm font-medium text-gray-700 "
                                     >
                                         Пароль
                                     </Label>
                                     <Link
                                         to="/forgot-password"
-                                        className="text-sm text-mainbg hover:text-dark-blue-600 dark:hover:text-light-blue-400 transition-colors"
+                                        className="text-sm text-mainbg hover:text-dark-blue-600  transition-colors"
                                     >
                                         Забыли пароль?
                                     </Link>
@@ -184,7 +184,7 @@ const Login = () => {
                                         onChange={(e) =>
                                             setPassword(e.target.value)
                                         }
-                                        className="h-12 rounded-xl border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-mainbg focus:border-mainbg transition-all duration-200 pr-12"
+                                        className="h-12 rounded-xl border-gray-200  focus:ring-2 focus:ring-mainbg focus:border-mainbg transition-all duration-200 pr-12"
                                         required
                                     />
                                     <button
@@ -192,7 +192,7 @@ const Login = () => {
                                         onClick={() =>
                                             setShowPassword(!showPassword)
                                         }
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600  transition-colors"
                                     >
                                         {showPassword ? (
                                             <HiEyeOff className="h-5 w-5" />
@@ -215,7 +215,7 @@ const Login = () => {
                                 />
                                 <Label
                                     htmlFor="remember"
-                                    className="text-sm text-gray-600 dark:text-gray-400 cursor-pointer"
+                                    className="text-sm text-gray-600  cursor-pointer"
                                 >
                                     Запомнить меня
                                 </Label>
@@ -225,7 +225,7 @@ const Login = () => {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-12 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full h-12 bg-gray-900 hover:bg-gray-800  text-white dark:text-gray-900 rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? "Загрузка..." : "Войти"}
                             </Button>
