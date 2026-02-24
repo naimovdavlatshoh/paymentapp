@@ -128,6 +128,8 @@ const DepositModal = ({ isOpen, onClose, onSuccess }: DepositModalProps) => {
         onClose();
     };
 
+    
+
     return (
         <CustomModal
             showTrigger={false}

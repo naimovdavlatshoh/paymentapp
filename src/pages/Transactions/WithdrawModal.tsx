@@ -22,6 +22,7 @@ interface Account {
     account_id: string;
     name: string;
     code: string;
+    total_balance: number;
 }
 
 interface WithdrawModalProps {
@@ -47,7 +48,7 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
     const fetchAccounts = async () => {
         try {
             const response = await GetDataSimple(
-                "api/finance/accounts?page=1&limit=100"
+                "api/finance/accounts?page=1&limit=100",
             );
             if (response && response.result) {
                 setAccounts(response.result);
@@ -105,14 +106,14 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
 
             const response = await PostDataTokenJson(
                 "api/finance/transactions/withdraw",
-                payload
+                payload,
             );
 
             console.log("Withdraw response:", response);
 
             if (response.data) {
                 toast.success(
-                    response.data.message || "Средства успешно сняты!"
+                    response.data.message || "Средства успешно сняты!",
                 );
 
                 // Reset form
@@ -135,7 +136,7 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
         } catch (err: any) {
             console.error("Withdraw error:", err);
             toast.error(
-                err.response?.data?.message || "Ошибка при снятии средств"
+                err.response?.data?.message || "Ошибка при снятии средств",
             );
         } finally {
             setLoading(false);
@@ -153,7 +154,13 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
         setDisplayAmount("");
         onClose();
     };
-
+    const formatBalance = (balance: string | number) => {
+        const num = typeof balance === "string" ? parseFloat(balance) : balance;
+        return new Intl.NumberFormat("ru-RU", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(num);
+    };
     return (
         <CustomModal
             showTrigger={false}
@@ -166,7 +173,7 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
             confirmBgHover="bg-red-500/70"
             onConfirm={handleSubmit}
             onCancel={handleCancel}
-            size="lg"
+            size="xl"
             showCloseButton={true}
         >
             <div className="space-y-4">
@@ -199,6 +206,10 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
                                     value={account.account_id}
                                 >
                                     {account.name} ({account.code})
+                                    <span className="text-green-500 text-sm">
+                                        {" "}
+                                        ({formatBalance(account.total_balance)})
+                                    </span>
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -249,7 +260,7 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
                                 // Integer qismni formatlash (3 raqamdan keyin bo'shliq)
                                 const integerPart = valueParts[0].replace(
                                     /\B(?=(\d{3})+(?!\d))/g,
-                                    " "
+                                    " ",
                                 );
 
                                 // Display qiymati: integer + o'nlik qism

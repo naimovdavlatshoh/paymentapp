@@ -22,6 +22,7 @@ interface Account {
     account_id: string;
     name: string;
     code: string;
+    total_balance: number;
 }
 
 interface TransferModalProps {
@@ -168,6 +169,14 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
         onClose();
     };
 
+    const formatBalance = (balance: string | number) => {
+        const num = typeof balance === "string" ? parseFloat(balance) : balance;
+        return new Intl.NumberFormat("ru-RU", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(num);
+    };
+
     return (
         <CustomModal
             showTrigger={false}
@@ -180,7 +189,7 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
             confirmBgHover="bg-black/90"
             onConfirm={handleSubmit}
             onCancel={handleCancel}
-            size="lg"
+            size="xl"
             showCloseButton={true}
         >
             <div className="space-y-4">
@@ -219,7 +228,8 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
                                     key={account.account_id}
                                     value={account.account_id}
                                 >
-                                    {account.name} ({account.code})
+                                    {account.name} ({account.code}) -
+                                    <span className="text-green-500 text-sm"> ({formatBalance(account.total_balance)})</span>
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -253,8 +263,12 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
                                 <SelectItem
                                     key={account.account_id}
                                     value={account.account_id}
+                                    disabled={account.account_id === transferForm.from_account_id}
+
                                 >
-                                    {account.name} ({account.code})
+                                    {account.name} ({account.code}) -
+                                    <span className="text-green-500 text-sm"> ({formatBalance(account.total_balance)})</span>
+
                                 </SelectItem>
                             ))}
                         </SelectContent>
