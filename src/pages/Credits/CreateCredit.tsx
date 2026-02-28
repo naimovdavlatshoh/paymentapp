@@ -204,7 +204,7 @@ const CreateCredit = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>Сumma кредита <span className="text-red-500">*</span></Label>
+                            <Label>Сумма кредита <span className="text-red-500">*</span></Label>
                             <Input 
                                 type="text" 
                                 value={formatNumber(form.credit_price)} 

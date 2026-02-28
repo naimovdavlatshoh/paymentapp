@@ -40,6 +40,22 @@ const PaymentsList = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [paymentToDelete, setPaymentToDelete] = useState<number | null>(null);
+    const [kreditAccount, setKreditAccount] = useState<any>(null);
+
+    const fetchAccounts = async () => {
+        try {
+            const response = await GetDataSimple("api/finance/accounts?page=1&limit=100");
+            if (response && response.result) {
+                const acc = response.result.find((a: any) => 
+                    a.name.toLowerCase().includes("кредит") || 
+                    a.code.toLowerCase().includes("кредит")
+                );
+                setKreditAccount(acc);
+            }
+        } catch (err) {
+            console.error("Error fetching accounts:", err);
+        }
+    };
 
     const fetchPayments = async () => {
         setLoading(true);
@@ -59,6 +75,7 @@ const PaymentsList = () => {
 
     useEffect(() => {
         fetchPayments();
+        fetchAccounts();
     }, [currentPage]);
 
     const formatPrice = (price: string | number) => {
@@ -103,13 +120,23 @@ const PaymentsList = () => {
         <div className="space-y-6 pb-10">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-1">
                 <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Оплаты по кредитам</h1>
-                <Button 
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="bg-maintx text-white hover:bg-maintx/80 rounded-xl"
-                >
-                    <IoMdAdd className="w-4 h-4 mr-1" />
-                    Добавить оплату
-                </Button>
+                <div className="flex items-center gap-4">
+                    {kreditAccount && (
+                        <div className="flex flex-col items-end mr-2">
+                            <span className="text-xs text-gray-500 font-medium">Текущий баланс (Кредит)</span>
+                            <span className="text-lg font-bold text-maintx dark:text-white">
+                                {formatPrice(kreditAccount.total_balance)} <span className="text-sm font-normal">сум</span>
+                            </span>
+                        </div>
+                    )}
+                    <Button 
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="bg-maintx text-white hover:bg-maintx/80 rounded-xl"
+                    >
+                        <IoMdAdd className="w-4 h-4 mr-1" />
+                        Добавить оплату
+                    </Button>
+                </div>
             </div>
 
             <Card className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">

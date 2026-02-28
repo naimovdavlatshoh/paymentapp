@@ -35,7 +35,7 @@ const navigation = [
         icon: <FaHandHoldingUsd className="w-5 h-5" />,
     },
     {
-        name: "Оплаты",
+        name: "Оплата кредита",
         href: "/credits/payments",
         icon: <MdOutlinePayment className="w-5 h-5" />,
     },

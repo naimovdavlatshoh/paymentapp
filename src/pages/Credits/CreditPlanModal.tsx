@@ -90,7 +90,7 @@ const CreditPlanModal = ({ isOpen, onClose, creditId }: CreditPlanModalProps) =>
             confirmText="Закрыть"
             onConfirm={onClose}
             onCancel={onClose}
-            size="xl"
+            maxWidth="900px"
             showCloseButton={true}
         >
             {loading ? (
