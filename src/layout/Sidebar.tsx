@@ -5,6 +5,8 @@ import { SiAnalogue } from "react-icons/si";
 import { IoIosArrowDown } from "react-icons/io";
 import { useEffect, useState } from "react";
 import { GrTransaction } from "react-icons/gr";
+import { FaHandHoldingUsd } from "react-icons/fa";
+import { MdOutlinePayment } from "react-icons/md";
 
 
 interface SidebarProps {
@@ -26,6 +28,16 @@ const navigation = [
         name: "Транзакции",
         href: "/transactions",
         icon: <GrTransaction className="w-5 h-5" />,
+    },
+    {
+        name: "Кредиты",
+        href: "/credits",
+        icon: <FaHandHoldingUsd className="w-5 h-5" />,
+    },
+    {
+        name: "Оплаты",
+        href: "/credits/payments",
+        icon: <MdOutlinePayment className="w-5 h-5" />,
     },
     // {
     //     name: "Пользователи",

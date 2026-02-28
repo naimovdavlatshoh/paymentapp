@@ -11,6 +11,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { showErrorToast } from "@/utils/toast-utils";
 import CustomModal from "@/components/ui/custom-modal";
 
 interface PaymentMethod {
@@ -148,9 +149,7 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
             }
         } catch (err: any) {
             console.error("Transfer error:", err);
-            toast.error(
-                err.response?.data?.message || "Ошибка при переводе средств"
-            );
+            showErrorToast(err, "Ошибка при переводе средств");
         } finally {
             setLoading(false);
         }

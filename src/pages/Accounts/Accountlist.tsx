@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 // @ts-ignore
 import { GetDataSimple } from "@/service";
 import { Badge } from "@/components/ui/badge";
+import { showErrorToast } from "@/utils/toast-utils";
 // import CustomBreadcrumb from "@/components/ui/custom-breadcrumb";
 import { Button } from "@/components/ui/button";
 // import { IoMdAdd } from "react-icons/io";
@@ -60,9 +61,8 @@ const Accountlist = () => {
             }
         } catch (err: any) {
             console.error("Error fetching accounts:", err);
-            setError(
-                err.response?.data?.message || "Ошибка при загрузке счетов"
-            );
+            const msg = showErrorToast(err, "Ошибка при загрузке счетов");
+            setError(msg);
         } finally {
             setLoading(false);
         }

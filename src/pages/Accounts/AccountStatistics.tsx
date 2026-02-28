@@ -18,6 +18,7 @@ import { ru } from "date-fns/locale";
 import { FaCalendarAlt } from "react-icons/fa";
 import { IoMdTrendingUp, IoMdTrendingDown } from "react-icons/io";
 import { MdSwapVert } from "react-icons/md";
+import { showErrorToast } from "@/utils/toast-utils";
 
 // Types
 interface Balance {
@@ -90,9 +91,8 @@ const AccountStatistics = () => {
             }
         } catch (err: any) {
             console.error("Error fetching statistics:", err);
-            setError(
-                err.response?.data?.message || "Ошибка при загрузке статистики"
-            );
+            const msg = showErrorToast(err, "Ошибка при загрузке статистики");
+            setError(msg);
         } finally {
             setLoading(false);
         }

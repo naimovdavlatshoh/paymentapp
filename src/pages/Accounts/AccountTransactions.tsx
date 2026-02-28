@@ -31,6 +31,7 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { IoArrowBack } from "react-icons/io5";
 import CustomBreadcrumb from "@/components/ui/custom-breadcrumb";
+import { showErrorToast } from "@/utils/toast-utils";
 
 // Types
 interface Balance {
@@ -92,10 +93,8 @@ const AccountTransactions = () => {
             }
         } catch (err: any) {
             console.error("Error fetching account transactions:", err);
-            setError(
-                err.response?.data?.message ||
-                    "Ошибка при загрузке транзакций счёта"
-            );
+            const msg = showErrorToast(err, "Ошибка при загрузке транзакций счёта");
+            setError(msg);
         } finally {
             setLoading(false);
         }

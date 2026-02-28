@@ -11,6 +11,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { showErrorToast } from "@/utils/toast-utils";
 import CustomModal from "@/components/ui/custom-modal";
 
 interface PaymentMethod {
@@ -108,9 +109,7 @@ const DepositModal = ({ isOpen, onClose, onSuccess }: DepositModalProps) => {
             }
         } catch (err: any) {
             console.error("Deposit error:", err);
-            toast.error(
-                err.response?.data?.message || "Ошибка при пополнении счёта"
-            );
+            showErrorToast(err, "Ошибка при пополнении счёта");
         } finally {
             setLoading(false);
         }

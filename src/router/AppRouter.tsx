@@ -11,6 +11,9 @@ import Accountlist from "@/pages/Accounts/Accountlist";
 import AccountTransactions from "@/pages/Accounts/AccountTransactions";
 import AccountStatistics from "@/pages/Accounts/AccountStatistics";
 import Transactionslist from "@/pages/Transactions/Transactionslist";
+import CreditsList from "@/pages/Credits/CreditsList";
+import CreateCredit from "@/pages/Credits/CreateCredit";
+import PaymentsList from "@/pages/Credits/PaymentsList";
 
 const router = createBrowserRouter([
     {
@@ -40,6 +43,18 @@ const router = createBrowserRouter([
             {
                 path: "transactions",
                 element: <Transactionslist />,
+            },
+            {
+                path: "credits",
+                element: <CreditsList />,
+            },
+            {
+                path: "credits/create",
+                element: <CreateCredit />,
+            },
+            {
+                path: "credits/payments",
+                element: <PaymentsList />,
             },
             {
                 path: "users",

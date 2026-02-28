@@ -51,6 +51,7 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { showErrorToast } from "@/utils/toast-utils";
 
 // Types
 interface Transaction {
@@ -176,9 +177,8 @@ const Transactionslist = () => {
             }
         } catch (err: any) {
             console.error("Error fetching transactions:", err);
-            setError(
-                err.response?.data?.message || "Ошибка при загрузке транзакций"
-            );
+            const msg = showErrorToast(err, "Ошибка при загрузке транзакций");
+            setError(msg);
         } finally {
             setLoading(false);
         }

@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 // @ts-ignore
 import { PostData } from "@/service";
 import { toast } from "sonner";
+import { showErrorToast } from "@/utils/toast-utils";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -65,10 +66,8 @@ const Login = () => {
             }
         } catch (err: any) {
             console.error("Login error:", err);
-            setError(
-                err.response?.data?.message ||
-                    "Ошибка входа. Проверьте логин и пароль."
-            );
+            const msg = showErrorToast(err, "Ошибка входа. Проверьте логин и пароль.");
+            setError(msg);
         } finally {
             setLoading(false);
         }

@@ -11,6 +11,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { showErrorToast } from "@/utils/toast-utils";
 import CustomModal from "@/components/ui/custom-modal";
 
 interface PaymentMethod {
@@ -135,9 +136,7 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
             }
         } catch (err: any) {
             console.error("Withdraw error:", err);
-            toast.error(
-                err.response?.data?.message || "Ошибка при снятии средств",
-            );
+            showErrorToast(err, "Ошибка при снятии средств");
         } finally {
             setLoading(false);
         }
