@@ -14,7 +14,9 @@ interface NavbarProps {
 
 const Navbar = ({ className }: NavbarProps) => {
     const handleLogout = () => {
-        console.log("Logout clicked");
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        window.location.href = "/login";
     };
 
     return (
