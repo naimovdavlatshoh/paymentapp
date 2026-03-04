@@ -105,6 +105,10 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
             toast.error("Выберите метод оплаты");
             return;
         }
+        if (!transferForm.comment || transferForm.comment.trim() === "") {
+            toast.error("Введите комментарий");
+            return;
+        }
 
         setLoading(true);
 
@@ -371,7 +375,9 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
 
                 {/* Comment */}
                 <div className="space-y-2">
-                    <Label htmlFor="comment">Комментарий</Label>
+                    <Label htmlFor="comment">
+                        Комментарий <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         id="comment"
                         type="text"
