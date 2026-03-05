@@ -203,7 +203,7 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
                                 <SelectItem
                                     key={account.account_id}
                                     value={account.account_id}
-                                    disabled={account.account_id !== "2"}
+                                    disabled={!["2", "5"].includes(account.account_id)}
                                 >
                                     {account.name} ({account.code})
                                     <span className="text-green-500 text-sm">
