@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { GrTransaction } from "react-icons/gr";
 import { FaHandHoldingUsd } from "react-icons/fa";
 import { MdOutlinePayment } from "react-icons/md";
+import { FileX2, Wallet } from "lucide-react";
 
 
 interface SidebarProps {
@@ -38,6 +39,16 @@ const navigation = [
         name: "Оплата кредита",
         href: "/credits/payments",
         icon: <MdOutlinePayment className="w-5 h-5" />,
+    },
+    {
+        name: "Расторгнутые контракты",
+        href: "/terminated-contracts",
+        icon: <FileX2 className="w-5 h-5" />,
+    },
+    {
+        name: "Оплата контрактов",
+        href: "/terminated-contracts/payments",
+        icon: <Wallet className="w-5 h-5" />,
     },
     // {
     //     name: "Пользователи",

@@ -14,6 +14,10 @@ import Transactionslist from "@/pages/Transactions/Transactionslist";
 import CreditsList from "@/pages/Credits/CreditsList";
 import CreateCredit from "@/pages/Credits/CreateCredit";
 import PaymentsList from "@/pages/Credits/PaymentsList";
+import TerminatedContracts from "@/pages/Finance/TerminatedContracts";
+import TerminatedContractDetail from "@/pages/Finance/TerminatedContractDetail";
+import TerminatedContractPlan from "@/pages/Finance/TerminatedContractPlan";
+import TerminatedContractPayments from "@/pages/Finance/TerminatedContractPayments";
 
 const router = createBrowserRouter([
     {
@@ -55,6 +59,22 @@ const router = createBrowserRouter([
             {
                 path: "credits/payments",
                 element: <PaymentsList />,
+            },
+            {
+                path: "terminated-contracts",
+                element: <TerminatedContracts />,
+            },
+            {
+                path: "terminated-contracts/payments",
+                element: <TerminatedContractPayments />,
+            },
+            {
+                path: "terminated-contracts/:id",
+                element: <TerminatedContractDetail />,
+            },
+            {
+                path: "terminated-contracts/:id/plan",
+                element: <TerminatedContractPlan />,
             },
             {
                 path: "users",
