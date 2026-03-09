@@ -138,10 +138,11 @@ const CreateTerminatedPaymentModal = ({ isOpen, selectedContractId, onClose, onS
         return new Date(d).toLocaleDateString("ru-RU", { year: "numeric", month: "2-digit", day: "2-digit" });
     };
 
-    const getStatusCls = (status: string) =>
-        status === "1"
-            ? "border-green-300 text-green-600 bg-green-50 dark:border-green-600 dark:text-green-400 dark:bg-green-900/10"
-            : "border-yellow-300 text-yellow-600 bg-yellow-50 dark:border-yellow-600 dark:text-yellow-400 dark:bg-yellow-900/10";
+    const getStatusCls = (status: string) => {
+        if (status === "2") return "border-green-300 text-green-600 bg-green-50 dark:border-green-600 dark:text-green-400 dark:bg-green-900/10";
+        if (status === "1") return "border-yellow-300 text-yellow-600 bg-yellow-50 dark:border-yellow-600 dark:text-yellow-400 dark:bg-yellow-900/10";
+        return "border-red-300 text-red-600 bg-red-50 dark:border-red-600 dark:text-red-400 dark:bg-red-900/10";
+    };
 
     /* ── Validation ─────────────────────────────────────────────────── */
     const validate = () => {

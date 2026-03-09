@@ -123,28 +123,29 @@ const TerminatedContractPlan = () => {
 
     const getStatusStyle = (status: string) => {
         switch (status) {
-            case "1":
+            case "2":
                 return {
                     cls: "border-green-300 text-green-600 bg-green-50 dark:border-green-600 dark:text-green-400 dark:bg-green-900/10",
                     icon: <CheckCircle2 className="w-3.5 h-3.5" />,
                 };
-            case "2":
+            case "1":
                 return {
-                    cls: "border-blue-300 text-blue-600 bg-blue-50 dark:border-blue-600 dark:text-blue-400 dark:bg-blue-900/10",
+                    cls: "border-yellow-300 text-yellow-600 bg-yellow-50 dark:border-yellow-600 dark:text-yellow-400 dark:bg-yellow-900/10",
                     icon: <Clock className="w-3.5 h-3.5" />,
                 };
             default:
                 return {
-                    cls: "border-yellow-300 text-yellow-600 bg-yellow-50 dark:border-yellow-600 dark:text-yellow-400 dark:bg-yellow-900/10",
+                    cls: "border-red-300 text-red-600 bg-red-50 dark:border-red-600 dark:text-red-400 dark:bg-red-900/10",
                     icon: <AlertCircle className="w-3.5 h-3.5" />,
                 };
         }
     };
 
-    const getPriceStatusStyle = (status: string) =>
-        status === "1"
-            ? "border-green-300 text-green-600 bg-green-50 dark:border-green-600 dark:text-green-400 dark:bg-green-900/10"
-            : "border-yellow-300 text-yellow-600 bg-yellow-50 dark:border-yellow-600 dark:text-yellow-400 dark:bg-yellow-900/10";
+    const getPriceStatusStyle = (status: string) => {
+        if (status === "2") return "border-green-300 text-green-600 bg-green-50 dark:border-green-600 dark:text-green-400 dark:bg-green-900/10";
+        if (status === "1") return "border-yellow-300 text-yellow-600 bg-yellow-50 dark:border-yellow-600 dark:text-yellow-400 dark:bg-yellow-900/10";
+        return "border-red-300 text-red-600 bg-red-50 dark:border-red-600 dark:text-red-400 dark:bg-red-900/10";
+    };
 
     /* ── Loading ─────────────────────────────────────────────────── */
     if (loading) {
