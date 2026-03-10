@@ -47,6 +47,8 @@ interface PriceItem {
     price_type: string;
     price_type_text: string;
     total_price: string;
+    total_paid: string;
+    total_remaining: string;
     payment_status: string;
     payment_status_text: string;
     created_at: string;
@@ -253,6 +255,8 @@ const TerminatedContractPlan = () => {
                                         <TableHead className="text-maintx dark:text-white w-12">#</TableHead>
                                         <TableHead className="text-maintx dark:text-white">Тип</TableHead>
                                         <TableHead className="text-maintx dark:text-white text-right">Сумма</TableHead>
+                                        <TableHead className="text-maintx dark:text-white text-right">Оплачено</TableHead>
+                                        <TableHead className="text-maintx dark:text-white text-right">Остаток</TableHead>
                                         <TableHead className="text-maintx dark:text-white">Статус</TableHead>
                                         <TableHead className="text-maintx dark:text-white">Дата</TableHead>
                                     </TableRow>
@@ -269,6 +273,12 @@ const TerminatedContractPlan = () => {
                                             </TableCell>
                                             <TableCell className="text-right font-bold text-gray-900 dark:text-white whitespace-nowrap">
                                                 {formatPrice(p.total_price)}
+                                            </TableCell>
+                                            <TableCell className="text-right font-semibold text-green-600 dark:text-green-400 whitespace-nowrap">
+                                                {formatPrice(s.total_paid)}
+                                            </TableCell>
+                                            <TableCell className="text-right font-bold text-red-500 dark:text-red-400 whitespace-nowrap">
+                                                {formatPrice(s.total_remaining)}
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="outline" className={`text-xs whitespace-nowrap ${getPriceStatusStyle(p.payment_status)}`}>

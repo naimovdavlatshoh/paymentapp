@@ -39,6 +39,7 @@ interface TerminatedContract {
     contract_number: string;
     apartment_number: string;
     total_price: string;
+    total_to_return: string;
     initial_payment: string;
     initial_payment_status: string;
     created_at: string;
@@ -301,7 +302,7 @@ const TerminatedContracts = () => {
 
                                             {/* Общая сумма */}
                                             <TableCell className="text-right font-semibold text-gray-800 dark:text-white whitespace-nowrap">
-                                                {formatPrice(contract.total_price)}{" "}
+                                                {formatPrice(contract.total_to_return)}{" "}
                                                 <span className="text-xs font-normal text-gray-400"></span>
                                             </TableCell>
 
