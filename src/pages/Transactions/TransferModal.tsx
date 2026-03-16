@@ -230,7 +230,7 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
                                 <SelectItem
                                     key={account.account_id}
                                     value={account.account_id}
-                                    disabled={["3", "4", "5", "7", "8"].includes(account.account_id.toString())}
+                                    disabled={["3", "4", "7", "8"].includes(account.account_id.toString())}
                                 >
                                     {account.name} ({account.code}) -
                                     <span className="text-green-500 text-sm"> ({formatBalance(account.total_balance)})</span>
