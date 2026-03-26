@@ -13,16 +13,25 @@ import {
 import { toast } from "sonner";
 import { showErrorToast } from "@/utils/toast-utils";
 import CustomModal from "@/components/ui/custom-modal";
+import { MdAccountBalanceWallet, MdCreditCard } from "react-icons/md";
+import { cn } from "@/lib/utils";
 
 interface PaymentMethod {
     id: string;
     name: string;
 }
 
+interface Balance {
+    payment_method_id: string;
+    payment_method_name: string;
+    balance: string;
+}
+
 interface Account {
     account_id: string;
     name: string;
     code: string;
+    balances: Balance[];
     total_balance: number;
 }
 
@@ -238,6 +247,46 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
                             ))}
                         </SelectContent>
                     </Select>
+                    {transferForm.from_account_id && (
+                        <div className="grid grid-cols-2 gap-3 mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                            {accounts.find(a => a.account_id === transferForm.from_account_id)?.balances?.map((bal) => {
+                                const isCash = bal.payment_method_name.toLowerCase().includes("налич") || bal.payment_method_name.toLowerCase().includes("naqt");
+                                return (
+                                    <div 
+                                        key={bal.payment_method_id} 
+                                        className={cn(
+                                            "relative overflow-hidden rounded-2xl p-3 border transition-all hover:shadow-md",
+                                            isCash 
+                                                ? "bg-emerald-50/50 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20" 
+                                                : "bg-blue-50/50 border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20"
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-2 mb-1">
+                                            {isCash ? (
+                                                <MdAccountBalanceWallet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                            ) : (
+                                                <MdCreditCard className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                            )}
+                                            <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">
+                                                {bal.payment_method_name}
+                                            </span>
+                                        </div>
+                                        <div className="text-sm font-bold tracking-tight">
+                                            {formatBalance(bal.balance)}
+                                            <span className="text-[10px] ml-1 opacity-60 font-medium">сум</span>
+                                        </div>
+                                        {/* Subtle background decoration */}
+                                        <div className={cn(
+                                            "absolute -right-2 -bottom-2 opacity-[0.05] pointer-events-none",
+                                            isCash ? "text-emerald-600" : "text-blue-600"
+                                        )}>
+                                            {isCash ? <MdAccountBalanceWallet className="w-12 h-12" /> : <MdCreditCard className="w-12 h-12" />}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
 
                 {/* To Account */}
@@ -277,6 +326,46 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
                             ))}
                         </SelectContent>
                     </Select>
+                    {transferForm.to_account_id && (
+                        <div className="grid grid-cols-2 gap-3 mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                            {accounts.find(a => a.account_id === transferForm.to_account_id)?.balances?.map((bal) => {
+                                const isCash = bal.payment_method_name.toLowerCase().includes("налич") || bal.payment_method_name.toLowerCase().includes("naqt");
+                                return (
+                                    <div 
+                                        key={bal.payment_method_id} 
+                                        className={cn(
+                                            "relative overflow-hidden rounded-2xl p-3 border transition-all hover:shadow-md",
+                                            isCash 
+                                                ? "bg-amber-50/50 border-amber-100 dark:bg-amber-500/10 dark:border-amber-500/20" 
+                                                : "bg-indigo-50/50 border-indigo-100 dark:bg-indigo-500/10 dark:border-indigo-500/20"
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-2 mb-1">
+                                            {isCash ? (
+                                                <MdAccountBalanceWallet className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                            ) : (
+                                                <MdCreditCard className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                            )}
+                                            <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">
+                                                {bal.payment_method_name}
+                                            </span>
+                                        </div>
+                                        <div className="text-sm font-bold tracking-tight">
+                                            {formatBalance(bal.balance)}
+                                            <span className="text-[10px] ml-1 opacity-60 font-medium">сум</span>
+                                        </div>
+                                        {/* Subtle background decoration */}
+                                        <div className={cn(
+                                            "absolute -right-2 -bottom-2 opacity-[0.05] pointer-events-none",
+                                            isCash ? "text-amber-600" : "text-indigo-600"
+                                        )}>
+                                            {isCash ? <MdAccountBalanceWallet className="w-12 h-12" /> : <MdCreditCard className="w-12 h-12" />}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
 
                 {/* Amount */}
