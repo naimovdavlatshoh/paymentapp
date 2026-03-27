@@ -39,9 +39,11 @@ import { HiDotsVertical } from "react-icons/hi";
 // import { CiEdit, CiTrash } from "react-icons/ci";
 import { Calendar } from "@/components/ui/calendar";
 import { IoMdAdd, IoMdRemove, IoMdSwap } from "react-icons/io";
+import { SiMicrosoftexcel } from "react-icons/si";
 import DepositModal from "./DepositModal";
 import WithdrawModal from "./WithdrawModal";
 import TransferModal from "./TransferModal";
+import ExportTransactionsModal from "./ExportTransactionsModal";
 import {
     Popover,
     PopoverContent,
@@ -117,6 +119,7 @@ const Transactionslist = () => {
     const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
     const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+    const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
     // Fetch Accounts
     const fetchAccounts = async () => {
@@ -352,6 +355,13 @@ const Transactionslist = () => {
                         </h1>
                     </div>
                     <div className="flex gap-2">
+                      <Button
+                            onClick={() => setIsExportModalOpen(true)}
+                            className="bg-green-600 text-white duration-300 hover:bg-green-800 rounded-xl"
+                        >
+                            <SiMicrosoftexcel className="w-4 h-4 mr-1" />
+                            Скачать Excel
+                        </Button>
                         <Button
                             onClick={() => setIsDepositModalOpen(true)}
                             className="bg-maintx text-white duration-300 hover:bg-maintx/80 rounded-xl"
@@ -373,6 +383,7 @@ const Transactionslist = () => {
                             <IoMdSwap className="w-4 h-4 mr-1" />
                             Перевести
                         </Button>
+                      
                         <Button
                             variant="outline"
                             onClick={() => setShowFilters(!showFilters)}
@@ -874,6 +885,12 @@ const Transactionslist = () => {
                 isOpen={isTransferModalOpen}
                 onClose={() => setIsTransferModalOpen(false)}
                 onSuccess={() => fetchTransactions()}
+            />
+
+            {/* Export Modal */}
+            <ExportTransactionsModal
+                isOpen={isExportModalOpen}
+                onClose={() => setIsExportModalOpen(false)}
             />
         </div>
     );

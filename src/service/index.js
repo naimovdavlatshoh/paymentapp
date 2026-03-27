@@ -90,3 +90,11 @@ export const DeleteData = async (url) => {
         },
     });
 };
+// ===== DOWNLOAD =====
+export const DownloadFile = async (url) => {
+    const headers = withAuthHeaders();
+    return await axios.get(BASE_URL + url, {
+        headers,
+        responseType: "blob",
+    });
+};
