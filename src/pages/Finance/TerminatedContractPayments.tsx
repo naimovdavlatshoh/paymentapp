@@ -19,6 +19,7 @@ import { Wallet, Plus, Trash2 } from "lucide-react";
 import CustomModal from "@/components/ui/custom-modal";
 import { showErrorToast } from "@/utils/toast-utils";
 import CreateTerminatedPaymentModal from "./CreateTerminatedPaymentModal";
+import { canPerformAction } from "@/utils/role";
 
 interface Payment {
     payment_id: string;
@@ -176,13 +177,15 @@ const TerminatedContractPayments = () => {
                         Всего: <span className="font-medium text-gray-700 dark:text-gray-300">{totalCount}</span>
                     </p>
                 </div>
-                <Button
-                    onClick={() => setCreateOpen(true)}
-                    className="mt-3 sm:mt-0 flex items-center gap-2 rounded-xl"
-                >
-                    <Plus className="w-4 h-4" />
-                    Добавить оплату
-                </Button>
+                {canPerformAction() && (
+                    <Button
+                        onClick={() => setCreateOpen(true)}
+                        className="mt-3 sm:mt-0 flex items-center gap-2 rounded-xl"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Добавить оплату
+                    </Button>
+                )}
             </div>
 
             {/* ── Table ────────────────────────────────────────────── */}
@@ -202,7 +205,9 @@ const TerminatedContractPayments = () => {
                                     <TableHead className="text-maintx dark:text-white">Оператор</TableHead>
                                     <TableHead className="text-maintx dark:text-white">Комментарий</TableHead>
                                     <TableHead className="text-maintx dark:text-white">Дата</TableHead>
-                                    <TableHead className="text-maintx dark:text-white w-12"></TableHead>
+                                    {canPerformAction() && (
+                                        <TableHead className="text-maintx dark:text-white w-12"></TableHead>
+                                    )}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -274,18 +279,20 @@ const TerminatedContractPayments = () => {
                                             <TableCell className="text-gray-500 dark:text-gray-400 text-sm whitespace-nowrap">
                                                 {formatDate(p.created_at)}
                                             </TableCell>
-
+ 
                                             {/* Actions */}
-                                            <TableCell className="text-right px-3">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleDeleteClick(p.payment_id)}
-                                                    className="h-8 w-8 p-0 rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </Button>
-                                            </TableCell>
+                                            {canPerformAction() && (
+                                                <TableCell className="text-right px-3">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleDeleteClick(p.payment_id)}
+                                                        className="h-8 w-8 p-0 rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </Button>
+                                                </TableCell>
+                                            )}
                                         </TableRow>
                                     ))
                                 )}

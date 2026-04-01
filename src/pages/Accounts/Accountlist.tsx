@@ -18,6 +18,7 @@ import { HiDotsVertical } from "react-icons/hi";
 // import { CiEdit, CiTrash } from "react-icons/ci";
 import { IoStatsChart } from "react-icons/io5";
 import { MdOutlineSwapHoriz } from "react-icons/md";
+import { isAccountant } from "@/utils/role";
 
 // Types
 interface Balance {
@@ -57,7 +58,13 @@ const Accountlist = () => {
             console.log("Accounts response:", response);
 
             if (response) {
-                setAccounts(response.result || []);
+                let fetchedAccounts = response.result || [];
+                if (isAccountant()) {
+                    fetchedAccounts = fetchedAccounts.filter(
+                        (acc: Account) => acc.account_id === "5"
+                    );
+                }
+                setAccounts(fetchedAccounts);
             }
         } catch (err: any) {
             console.error("Error fetching accounts:", err);

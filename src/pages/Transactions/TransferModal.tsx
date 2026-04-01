@@ -13,6 +13,9 @@ import {
 import { toast } from "sonner";
 import { showErrorToast } from "@/utils/toast-utils";
 import CustomModal from "@/components/ui/custom-modal";
+import { isAccountant } from "@/utils/role";
+
+const ACCOUNTANT_BANK_ID = "5";
 import { MdAccountBalanceWallet, MdCreditCard } from "react-icons/md";
 import { cn } from "@/lib/utils";
 
@@ -47,8 +50,10 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [displayAmount, setDisplayAmount] = useState("");
 
+    const defaultFromAccountId = isAccountant() ? ACCOUNTANT_BANK_ID : "";
+
     const [transferForm, setTransferForm] = useState({
-        from_account_id: "",
+        from_account_id: defaultFromAccountId,
         to_account_id: "",
         amount: "",
         payment_method_id: "",
@@ -137,14 +142,14 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
 
             console.log("Transfer response:", response);
 
-            if (response.data) {
+            if (response && (response.status === 200 || response.status === 201)) {
                 toast.success(
-                    response.data.message || "Перевод успешно выполнен!"
+                    response.data?.message || "Перевод успешно выполнен!"
                 );
 
                 // Reset form
                 setTransferForm({
-                    from_account_id: "",
+                    from_account_id: defaultFromAccountId,
                     to_account_id: "",
                     amount: "",
                     payment_method_id: "",
@@ -171,7 +176,7 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
     const handleCancel = () => {
         // Reset form
         setTransferForm({
-            from_account_id: "",
+            from_account_id: defaultFromAccountId,
             to_account_id: "",
             amount: "",
             payment_method_id: "",
@@ -217,36 +222,53 @@ const TransferModal = ({ isOpen, onClose, onSuccess }: TransferModalProps) => {
                     <Label>
                         Счёт списания <span className="text-red-500">*</span>
                     </Label>
-                    <Select
-                        value={transferForm.from_account_id || "placeholder"}
-                        onValueChange={(value) =>
-                            setTransferForm({
-                                ...transferForm,
-                                from_account_id:
-                                    value === "placeholder" ? "" : value,
-                            })
-                        }
-                        disabled={loading}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Выберите счёт" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="placeholder" disabled>
-                                Выберите счёт
-                            </SelectItem>
-                            {accounts.map((account) => (
-                                <SelectItem
-                                    key={account.account_id}
-                                    value={account.account_id}
-                                    disabled={["3", "4", "7", "8"].includes(account.account_id.toString())}
-                                >
-                                    {account.name} ({account.code}) -
-                                    <span className="text-green-500 text-sm"> ({formatBalance(account.total_balance)})</span>
+                    {isAccountant() ? (
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                            <div className="flex items-center justify-between">
+                                <span className="font-semibold text-blue-900 dark:text-blue-100">
+                                    Банк
+                                </span>
+                                <span className="text-green-600 dark:text-green-400 font-bold bg-green-50 dark:bg-green-900/30 px-3 py-1 rounded-lg border border-green-100 dark:border-green-800">
+                                    {formatBalance(
+                                        accounts.find(
+                                            (a) => a.account_id === ACCOUNTANT_BANK_ID
+                                        )?.total_balance || 0
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                    ) : (
+                        <Select
+                            value={transferForm.from_account_id || "placeholder"}
+                            onValueChange={(value) =>
+                                setTransferForm({
+                                    ...transferForm,
+                                    from_account_id:
+                                        value === "placeholder" ? "" : value,
+                                })
+                            }
+                            disabled={loading}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Выберите счёт" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="placeholder" disabled>
+                                    Выберите счёт
                                 </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                                {accounts.map((account) => (
+                                    <SelectItem
+                                        key={account.account_id}
+                                        value={account.account_id}
+                                        disabled={["3", "4", "7", "8"].includes(account.account_id.toString())}
+                                    >
+                                        {account.name} ({account.code}) -
+                                        <span className="text-green-500 text-sm"> ({formatBalance(account.total_balance)})</span>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
                     {transferForm.from_account_id && (
                         <div className="grid grid-cols-2 gap-3 mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
                             {accounts.find(a => a.account_id === transferForm.from_account_id)?.balances?.map((bal) => {

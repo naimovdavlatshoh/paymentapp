@@ -26,6 +26,7 @@ import {
 import CustomModal from "@/components/ui/custom-modal";
 import { showErrorToast } from "@/utils/toast-utils";
 import CreateTerminatedPaymentModal from "./CreateTerminatedPaymentModal";
+import { canPerformAction } from "@/utils/role";
 
 interface TerminatedContract {
     terminated_contract_id: string;
@@ -347,23 +348,27 @@ const TerminatedContracts = () => {
                                                               <CalendarDays className="w-4 h-4 text-purple-500" />
                                                               <span>График</span>
                                                           </DropdownMenuItem>
-                                                          <DropdownMenuItem
-                                                              onClick={() => {
-                                                                  setSelectedContractId(contract.terminated_contract_id);
-                                                                  setPaymentOpen(true);
-                                                              }}
-                                                              className="flex items-center gap-2 cursor-pointer text-green-600 focus:text-green-600"
-                                                          >
-                                                              <CreditCard className="w-4 h-4" />
-                                                              <span>Оплата</span>
-                                                          </DropdownMenuItem>
-                                                     <DropdownMenuItem
-                                                         onClick={() => handleDeleteClick(contract.terminated_contract_id)}
-                                                         className="flex items-center gap-2 cursor-pointer text-red-500 focus:text-red-500"
-                                                     >
-                                                         <Trash2 className="w-4 h-4" />
-                                                         <span>Удалить</span>
-                                                     </DropdownMenuItem>
+                                                          {canPerformAction() && (
+                                                              <DropdownMenuItem
+                                                                  onClick={() => {
+                                                                      setSelectedContractId(contract.terminated_contract_id);
+                                                                      setPaymentOpen(true);
+                                                                  }}
+                                                                  className="flex items-center gap-2 cursor-pointer text-green-600 focus:text-green-600"
+                                                              >
+                                                                  <CreditCard className="w-4 h-4" />
+                                                                  <span>Оплата</span>
+                                                              </DropdownMenuItem>
+                                                          )}
+                                                          {canPerformAction() && (
+                                                              <DropdownMenuItem
+                                                                  onClick={() => handleDeleteClick(contract.terminated_contract_id)}
+                                                                  className="flex items-center gap-2 cursor-pointer text-red-500 focus:text-red-500"
+                                                              >
+                                                                  <Trash2 className="w-4 h-4" />
+                                                                  <span>Удалить</span>
+                                                              </DropdownMenuItem>
+                                                          )}
                                                      </DropdownMenuContent>
                                                  </DropdownMenu>
                                              </TableCell>

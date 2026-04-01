@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import CustomBreadcrumb from "@/components/ui/custom-breadcrumb";
 import { ProgressAuto } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
+import { canPerformAction } from "@/utils/role";
 
 const Account = () => {
     const [formData, setFormData] = useState({
@@ -171,9 +172,11 @@ const Account = () => {
                                         Активный пользователь
                                     </Label>
                                 </div>
-                                <button className="mt-4 w-3/4 rounded-xl bg-red-100 text-red-600 py-3 font-medium">
-                                    Удалить пользователя
-                                </button>
+                                {canPerformAction() && (
+                                    <button className="mt-4 w-3/4 rounded-xl bg-red-100 text-red-600 py-3 font-medium">
+                                        Удалить пользователя
+                                    </button>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
@@ -407,12 +410,14 @@ const Account = () => {
                                         Отмена
                                     </Button>
                                 </Link>
-                                <Button
-                                    type="submit"
-                                    className="px-6 py-2 h-12 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 rounded-xl font-medium transition-all duration-200"
-                                >
-                                    Создать пользователя
-                                </Button>
+                                {canPerformAction() && (
+                                    <Button
+                                        type="submit"
+                                        className="px-6 py-2 h-12 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 rounded-xl font-medium transition-all duration-200"
+                                    >
+                                        Создать пользователя
+                                    </Button>
+                                )}
                             </div>
                         </form>
                     </CardContent>

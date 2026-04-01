@@ -13,6 +13,9 @@ import {
 import { toast } from "sonner";
 import { showErrorToast } from "@/utils/toast-utils";
 import CustomModal from "@/components/ui/custom-modal";
+import { isAccountant } from "@/utils/role";
+
+const ACCOUNTANT_BANK_ID = "5";
 
 interface PaymentMethod {
     id: string;
@@ -38,8 +41,10 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [displayAmount, setDisplayAmount] = useState("");
 
+    const defaultAccountId = isAccountant() ? ACCOUNTANT_BANK_ID : "";
+
     const [withdrawForm, setWithdrawForm] = useState({
-        from_account_id: "",
+        from_account_id: defaultAccountId,
         amount: "",
         payment_method_id: "",
         comment: "",
@@ -112,14 +117,14 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
 
             console.log("Withdraw response:", response);
 
-            if (response.data) {
+            if (response && (response.status === 200 || response.status === 201)) {
                 toast.success(
-                    response.data.message || "Средства успешно сняты!",
+                    response.data?.message || "Средства успешно сняты!",
                 );
 
                 // Reset form
                 setWithdrawForm({
-                    from_account_id: "",
+                    from_account_id: defaultAccountId,
                     amount: "",
                     payment_method_id: "",
                     comment: "",
@@ -145,7 +150,7 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
     const handleCancel = () => {
         // Reset form
         setWithdrawForm({
-            from_account_id: "",
+            from_account_id: defaultAccountId,
             amount: "",
             payment_method_id: "",
             comment: "",
@@ -181,39 +186,56 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }: WithdrawModalProps) => {
                     <Label>
                         Счёт списания <span className="text-red-500">*</span>
                     </Label>
-                    <Select
-                        value={withdrawForm.from_account_id || "placeholder"}
-                        onValueChange={(value) =>
-                            setWithdrawForm({
-                                ...withdrawForm,
-                                from_account_id:
-                                    value === "placeholder" ? "" : value,
-                            })
-                        }
-                        disabled={loading}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Выберите счёт" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="placeholder" disabled>
-                                Выберите счёт
-                            </SelectItem>
-                            {accounts.map((account) => (
-                                <SelectItem
-                                    key={account.account_id}
-                                    value={account.account_id}
-                                    disabled={!["2", "5"].includes(account.account_id)}
-                                >
-                                    {account.name} ({account.code})
-                                    <span className="text-green-500 text-sm">
-                                        {" "}
-                                        ({formatBalance(account.total_balance)})
-                                    </span>
+                    {isAccountant() ? (
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                            <div className="flex items-center justify-between">
+                                <span className="font-semibold text-blue-900 dark:text-blue-100">
+                                    Банк
+                                </span>
+                                <span className="text-green-600 dark:text-green-400 font-bold bg-green-50 dark:bg-green-900/30 px-3 py-1 rounded-lg border border-green-100 dark:border-green-800">
+                                    {formatBalance(
+                                        accounts.find(
+                                            (a) => a.account_id === ACCOUNTANT_BANK_ID
+                                        )?.total_balance || 0
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                    ) : (
+                        <Select
+                            value={withdrawForm.from_account_id || "placeholder"}
+                            onValueChange={(value) =>
+                                setWithdrawForm({
+                                    ...withdrawForm,
+                                    from_account_id:
+                                        value === "placeholder" ? "" : value,
+                                })
+                            }
+                            disabled={loading}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Выберите счёт" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="placeholder" disabled>
+                                    Выберите счёт
                                 </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                                {accounts.map((account) => (
+                                    <SelectItem
+                                        key={account.account_id}
+                                        value={account.account_id}
+                                        disabled={!["2", "5"].includes(account.account_id)}
+                                    >
+                                        {account.name} ({account.code})
+                                        <span className="text-green-500 text-sm">
+                                            {" "}
+                                            ({formatBalance(account.total_balance)})
+                                        </span>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
                 </div>
 
                 {/* Amount */}

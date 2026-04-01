@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 // @ts-ignore
-import { GetDataSimple } from "@/service";
+import { GetDataSimple, DeleteData } from "@/service";
 import {
     Card,
     CardContent,
@@ -31,12 +31,12 @@ import { ProgressAuto } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     DropdownMenu,
-    // DropdownMenuContent,
-    // DropdownMenuItem,
+    DropdownMenuContent,
+    DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { HiDotsVertical } from "react-icons/hi";
-// import { CiEdit, CiTrash } from "react-icons/ci";
+import { CiTrash } from "react-icons/ci";
 import { Calendar } from "@/components/ui/calendar";
 import { IoMdAdd, IoMdRemove, IoMdSwap } from "react-icons/io";
 import { SiMicrosoftexcel } from "react-icons/si";
@@ -44,6 +44,9 @@ import DepositModal from "./DepositModal";
 import WithdrawModal from "./WithdrawModal";
 import TransferModal from "./TransferModal";
 import ExportTransactionsModal from "./ExportTransactionsModal";
+import CustomModal from "@/components/ui/custom-modal";
+import { toast } from "sonner";
+import { canPerformAction, isAccountant } from "@/utils/role";
 import {
     Popover,
     PopoverContent,
@@ -120,6 +123,8 @@ const Transactionslist = () => {
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
     const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
 
     // Fetch Accounts
     const fetchAccounts = async () => {
@@ -223,7 +228,7 @@ const Transactionslist = () => {
 
     // Search filter
     const searchFilteredTransactions = transactions.filter(
-        (transaction) =>
+        (transaction: Transaction) =>
             transaction.comment
                 ?.toLowerCase()
                 .includes(searchQuery.toLowerCase()) ||
@@ -261,9 +266,9 @@ const Transactionslist = () => {
     };
 
     const handleSelectTransaction = (transactionId: string) => {
-        setSelectedTransactions((prev) =>
+        setSelectedTransactions((prev: string[]) =>
             prev.includes(transactionId)
-                ? prev.filter((id) => id !== transactionId)
+                ? prev.filter((id: string) => id !== transactionId)
                 : [...prev, transactionId]
         );
     };
@@ -285,6 +290,21 @@ const Transactionslist = () => {
         setDateFrom(undefined);
         setDateTo(undefined);
         setActiveTab("all");
+    };
+
+    const handleDeleteTransaction = async () => {
+        if (!transactionToDelete) return;
+        try {
+            await DeleteData(`api/finance/transactions/${transactionToDelete}`);
+            toast.success("Транзакция успешно удалена!");
+            fetchTransactions();
+        } catch (err: any) {
+            console.error("Error deleting transaction:", err);
+            showErrorToast(err, "Ошибка при удалении транзакции");
+        } finally {
+            setIsDeleteOpen(false);
+            setTransactionToDelete(null);
+        }
     };
 
     const formatBalance = (balance: string | number) => {
@@ -355,34 +375,40 @@ const Transactionslist = () => {
                         </h1>
                     </div>
                     <div className="flex gap-2">
-                      <Button
-                            onClick={() => setIsExportModalOpen(true)}
-                            className="bg-green-600 text-white duration-300 hover:bg-green-800 rounded-xl"
-                        >
-                            <SiMicrosoftexcel className="w-4 h-4 mr-1" />
-                            Скачать Excel
-                        </Button>
-                        <Button
-                            onClick={() => setIsDepositModalOpen(true)}
-                            className="bg-maintx text-white duration-300 hover:bg-maintx/80 rounded-xl"
-                        >
-                            <IoMdAdd className="w-4 h-4 mr-1" />
-                            Пополнить
-                        </Button>
-                        <Button
-                            onClick={() => setIsWithdrawModalOpen(true)}
-                            className="bg-red-600 text-white duration-300 hover:bg-red-800 rounded-xl"
-                        >
-                            <IoMdRemove className="w-4 h-4 mr-1" />
-                            Снять
-                        </Button>
-                        <Button
-                            onClick={() => setIsTransferModalOpen(true)}
-                            className="bg-black text-white duration-300 hover:bg-black/90 rounded-xl"
-                        >
-                            <IoMdSwap className="w-4 h-4 mr-1" />
-                            Перевести
-                        </Button>
+                      {!isAccountant() && (
+                          <Button
+                              onClick={() => setIsExportModalOpen(true)}
+                              className="bg-green-600 text-white duration-300 hover:bg-green-800 rounded-xl"
+                          >
+                              <SiMicrosoftexcel className="w-4 h-4 mr-1" />
+                              Скачать Excel
+                          </Button>
+                      )}
+                    {canPerformAction() && (
+                        <div className="flex gap-2">
+                            <Button
+                                onClick={() => setIsDepositModalOpen(true)}
+                                className="bg-maintx text-white duration-300 hover:bg-maintx/80 rounded-xl"
+                            >
+                                <IoMdAdd className="w-4 h-4 mr-1" />
+                                Пополнить
+                            </Button>
+                            <Button
+                                onClick={() => setIsWithdrawModalOpen(true)}
+                                className="bg-red-600 text-white duration-300 hover:bg-red-800 rounded-xl"
+                            >
+                                <IoMdRemove className="w-4 h-4 mr-1" />
+                                Снять
+                            </Button>
+                            <Button
+                                onClick={() => setIsTransferModalOpen(true)}
+                                className="bg-black text-white duration-300 hover:bg-black/90 rounded-xl"
+                            >
+                                <IoMdSwap className="w-4 h-4 mr-1" />
+                                Перевести
+                            </Button>
+                        </div>
+                    )}
                       
                         <Button
                             variant="outline"
@@ -421,7 +447,7 @@ const Transactionslist = () => {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">Все</SelectItem>
-                                        {accounts.map((account) => (
+                                        {accounts.map((account: Account) => (
                                             <SelectItem
                                                 key={account.account_id}
                                                 value={account.account_id}
@@ -449,7 +475,7 @@ const Transactionslist = () => {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">Все</SelectItem>
-                                        {accounts.map((account) => (
+                                        {accounts.map((account: Account) => (
                                             <SelectItem
                                                 key={account.account_id}
                                                 value={account.account_id}
@@ -477,7 +503,7 @@ const Transactionslist = () => {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">Все</SelectItem>
-                                        {paymentMethods.map((method) => (
+                                        {paymentMethods.map((method: PaymentMethod) => (
                                             <SelectItem
                                                 key={method.id}
                                                 value={method.id}
@@ -809,27 +835,32 @@ const Transactionslist = () => {
                                                 </div>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger
-                                                        asChild
-                                                    >
-                                                        <button className="rounded-full outline-none focus:outline-none focus:ring-0 focus:border-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-0 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 transition-colors duration-200">
-                                                            <HiDotsVertical className="w-4 h-4 text-gray-500" />
-                                                        </button>
-                                                    </DropdownMenuTrigger>
-                                                    {/* <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem className="flex items-center gap-2">
-                                                            <CiEdit className="w-4 h-4" />
-                                                            <span>
-                                                                Редактировать
-                                                            </span>
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem className="flex items-center gap-2 text-red-600 hover:text-red-600">
-                                                            <CiTrash className="w-4 h-4" />
-                                                            <span>Удалить</span>
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent> */}
-                                                </DropdownMenu>
+                                                {canPerformAction() && !isAccountant() && (
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger
+                                                            asChild
+                                                        >
+                                                            <button className="rounded-full outline-none focus:outline-none focus:ring-0 focus:border-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-0 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 transition-colors duration-200">
+                                                                <HiDotsVertical className="w-4 h-4 text-gray-500" />
+                                                            </button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuItem 
+                                                                className={`flex items-center gap-2 ${transaction.source === "manual" ? "text-red-600 hover:text-red-600" : "text-gray-400 cursor-not-allowed"}`}
+                                                                disabled={transaction.source !== "manual"}
+                                                                onClick={() => {
+                                                                    if (transaction.source === "manual") {
+                                                                        setTransactionToDelete(transaction.id);
+                                                                        setIsDeleteOpen(true);
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <CiTrash className="w-4 h-4" />
+                                                                <span>Удалить</span>
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -892,6 +923,28 @@ const Transactionslist = () => {
                 isOpen={isExportModalOpen}
                 onClose={() => setIsExportModalOpen(false)}
             />
+
+            {/* Delete Confirmation Modal */}
+            <CustomModal
+                open={isDeleteOpen}
+                onOpenChange={setIsDeleteOpen}
+                title="Удалить транзакцию"
+                onConfirm={handleDeleteTransaction}
+                onCancel={() => setIsDeleteOpen(false)}
+                confirmText="Удалить"
+                cancelText="Отмена"
+                size="sm"
+                confirmVariant="destructive"
+                confirmBg="bg-red-500"
+                confirmBgHover="bg-red-600"
+                showTrigger={false}
+            >
+                <div className="py-4">
+                    <p className="text-gray-600 dark:text-gray-300">
+                        Вы уверены, dass хотите удалить транзакцию #{transactionToDelete}? Bu amalni ortga qaytarib bo'lmaydi.
+                    </p>
+                </div>
+            </CustomModal>
         </div>
     );
 };

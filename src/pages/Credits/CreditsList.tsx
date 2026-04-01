@@ -27,6 +27,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { canPerformAction } from "@/utils/role";
 
 interface Credit {
     id: number;
@@ -136,13 +137,15 @@ const CreditsList = () => {
         <div className="space-y-6 pb-10">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-1">
                 <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Кредиты</h1>
-                <Button 
-                    onClick={() => navigate("/credits/create")}
-                    className="bg-maintx text-white hover:bg-maintx/80 rounded-xl"
-                >
-                    <IoMdAdd className="w-4 h-4 mr-1" />
-                    Добавить кредит
-                </Button>
+                {canPerformAction() && (
+                    <Button 
+                        onClick={() => navigate("/credits/create")}
+                        className="bg-maintx text-white hover:bg-maintx/80 rounded-xl"
+                    >
+                        <IoMdAdd className="w-4 h-4 mr-1" />
+                        Добавить кредит
+                    </Button>
+                )}
             </div>
 
             <Card className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
@@ -192,16 +195,18 @@ const CreditsList = () => {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end" className="w-48 rounded-xl">
-                                                        <DropdownMenuItem 
-                                                            onClick={() => {
-                                                                setCreditForPayment(credit.id);
-                                                                setIsPaymentModalOpen(true);
-                                                            }}
-                                                            className="flex items-center gap-2 cursor-pointer"
-                                                        >
-                                                            <CreditCard className="w-4 h-4 text-green-500" />
-                                                            <span>Оплатить</span>
-                                                        </DropdownMenuItem>
+                                                        {canPerformAction() && (
+                                                            <DropdownMenuItem 
+                                                                onClick={() => {
+                                                                    setCreditForPayment(credit.id);
+                                                                    setIsPaymentModalOpen(true);
+                                                                }}
+                                                                className="flex items-center gap-2 cursor-pointer"
+                                                            >
+                                                                <CreditCard className="w-4 h-4 text-green-500" />
+                                                                <span>Оплатить</span>
+                                                            </DropdownMenuItem>
+                                                        )}
                                                         <DropdownMenuItem 
                                                             onClick={() => {
                                                                 setSelectedCreditId(credit.id);
@@ -212,13 +217,15 @@ const CreditsList = () => {
                                                             <Eye className="w-4 h-4 text-maintx" />
                                                             <span>График платежей</span>
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem 
-                                                            onClick={() => handleDelete(credit.id)}
-                                                            className="flex items-center gap-2 cursor-pointer text-red-500 focus:text-red-500"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                            <span>Удалить кредит</span>
-                                                        </DropdownMenuItem>
+                                                        {canPerformAction() && (
+                                                            <DropdownMenuItem 
+                                                                onClick={() => handleDelete(credit.id)}
+                                                                className="flex items-center gap-2 cursor-pointer text-red-500 focus:text-red-500"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                                <span>Удалить кредит</span>
+                                                            </DropdownMenuItem>
+                                                        )}
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </TableCell>

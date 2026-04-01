@@ -13,6 +13,10 @@ import {
 import { toast } from "sonner";
 import { showErrorToast } from "@/utils/toast-utils";
 import CustomModal from "@/components/ui/custom-modal";
+import { isAccountant } from "@/utils/role";
+
+const BOBO_BANK_ID = "2";
+const ACCOUNTANT_BANK_ID = "5";
 
 interface PaymentMethod {
     id: string;
@@ -30,8 +34,10 @@ const DepositModal = ({ isOpen, onClose, onSuccess }: DepositModalProps) => {
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const [displayAmount, setDisplayAmount] = useState("");
 
+    const defaultAccountId = isAccountant() ? ACCOUNTANT_BANK_ID : BOBO_BANK_ID;
+
     const [depositForm, setDepositForm] = useState({
-        to_account_id: "2", // Faqat Bobo Bank (ID=2)
+        to_account_id: defaultAccountId, 
         amount: "",
         payment_method_id: "",
         comment: "",
@@ -85,14 +91,14 @@ const DepositModal = ({ isOpen, onClose, onSuccess }: DepositModalProps) => {
 
             console.log("Deposit response:", response);
 
-            if (response.data) {
+            if (response && (response.status === 200 || response.status === 201)) {
                 toast.success(
-                    response.data.message || "Счёт успешно пополнен!"
+                    response.data?.message || "Счёт успешно пополнен!"
                 );
 
                 // Reset form
                 setDepositForm({
-                    to_account_id: "2",
+                    to_account_id: defaultAccountId,
                     amount: "",
                     payment_method_id: "",
                     comment: "",
@@ -118,7 +124,7 @@ const DepositModal = ({ isOpen, onClose, onSuccess }: DepositModalProps) => {
     const handleCancel = () => {
         // Reset form
         setDepositForm({
-            to_account_id: "2",
+            to_account_id: defaultAccountId,
             amount: "",
             payment_method_id: "",
             comment: "",
@@ -150,7 +156,7 @@ const DepositModal = ({ isOpen, onClose, onSuccess }: DepositModalProps) => {
                     <p className="text-sm text-blue-800 dark:text-blue-300">
                         📌 Пополнение доступно только для счёта{" "}
                         <span className="font-semibold">
-                            Бобо Банк (BOBO_BANK)
+                            {isAccountant() ? "Банк" : "Бобо Банк (BOBO_BANK)"}
                         </span>
                     </p>
                 </div>

@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { showErrorToast } from "@/utils/toast-utils";
 import CreatePaymentModal from "./CreatePaymentModal";
 import CustomModal from "@/components/ui/custom-modal";
+import { canPerformAction } from "@/utils/role";
 
 interface Payment {
     id: number;
@@ -129,13 +130,15 @@ const PaymentsList = () => {
                             </span>
                         </div>
                     )}
-                    <Button 
-                        onClick={() => setIsCreateModalOpen(true)}
-                        className="bg-maintx text-white hover:bg-maintx/80 rounded-xl"
-                    >
-                        <IoMdAdd className="w-4 h-4 mr-1" />
-                        Добавить оплату
-                    </Button>
+                    {canPerformAction() && (
+                        <Button 
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="bg-maintx text-white hover:bg-maintx/80 rounded-xl"
+                        >
+                            <IoMdAdd className="w-4 h-4 mr-1" />
+                            Добавить оплату
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -151,7 +154,9 @@ const PaymentsList = () => {
                                     <TableHead className="text-maintx dark:text-white">Метод</TableHead>
                                     <TableHead className="text-maintx dark:text-white">Комментарий</TableHead>
                                     <TableHead className="text-maintx dark:text-white">Дата</TableHead>
-                                    <TableHead className="text-right text-maintx dark:text-white px-6">Действия</TableHead>
+                                    {canPerformAction() && (
+                                        <TableHead className="text-right text-maintx dark:text-white px-6">Действия</TableHead>
+                                    )}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -174,16 +179,18 @@ const PaymentsList = () => {
                                             <TableCell className="whitespace-nowrap">
                                                 {new Date(payment.created_at).toLocaleDateString("ru-RU")}
                                             </TableCell>
-                                            <TableCell className="text-right px-6">
-                                                <Button 
-                                                    variant="ghost" 
-                                                    size="sm"
-                                                    className="rounded-lg hover:bg-red-50 hover:text-red-500 text-gray-400"
-                                                    onClick={() => handleDelete(payment.id)}
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </Button>
-                                            </TableCell>
+                                            {canPerformAction() && (
+                                                <TableCell className="text-right px-6">
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        size="sm"
+                                                        className="rounded-lg hover:bg-red-50 hover:text-red-500 text-gray-400"
+                                                        onClick={() => handleDelete(payment.id)}
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </Button>
+                                                </TableCell>
+                                            )}
                                         </TableRow>
                                     ))
                                 )}

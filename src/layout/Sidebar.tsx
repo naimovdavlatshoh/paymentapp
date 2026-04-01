@@ -1,13 +1,13 @@
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 import { SiAnalogue } from "react-icons/si";
-// import { FaUserFriends } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { useEffect, useState } from "react";
 import { GrTransaction } from "react-icons/gr";
 import { FaHandHoldingUsd } from "react-icons/fa";
 import { MdOutlinePayment } from "react-icons/md";
-import { FileX2, Wallet } from "lucide-react";
+import { FileX2, Wallet, Users as UsersIcon } from "lucide-react";
+import { isAccountant } from "@/utils/role";
 
 
 interface SidebarProps {
@@ -15,11 +15,6 @@ interface SidebarProps {
 }
 
 const navigation = [
-    // {
-    //     name: "Аналитика",
-    //     href: "/",
-    //     icon: <SiAnalogue className="w-5 h-5" />,
-    // },
     {
         name: "Счета",
         href: "/",
@@ -50,17 +45,13 @@ const navigation = [
         href: "/terminated-contracts/payments",
         icon: <Wallet className="w-5 h-5" />,
     },
-    // {
-    //     name: "Пользователи",
-    //     href: "/users",
-    //     icon: <FaUserFriends className="w-5 h-5" />,
-    //     children: [
-    //         { name: "Все пользователи", href: "/users" },
-    //         { name: "Добавить пользователя", href: "/users/create" },
-    //         { name: "Аккаунт", href: "/users/account" },
-    //     ],
-    // },
+    {
+        name: "Все пользователи",
+        href: "/users",
+        icon: <UsersIcon className="w-5 h-5" />,
+    },
 ];
+
 
 const Sidebar = ({ className }: SidebarProps) => {
     const location = useLocation();
@@ -96,7 +87,17 @@ const Sidebar = ({ className }: SidebarProps) => {
             {/* Navigation Menu */}
             <nav className="flex-1 py-4">
                 <ul className="space-y-1">
-                    {navigation.map((item) => {
+                    {navigation
+                        .filter((item) => {
+                            if (isAccountant()) {
+                                return (
+                                    item.name === "Счета" ||
+                                    item.name === "Транзакции"
+                                );
+                            }
+                            return true;
+                        })
+                        .map((item) => {
                         const isActive = location.pathname === item.href;
                         const hasChildren = (item as any).children?.length > 0;
 

@@ -42,10 +42,17 @@ import { toast } from "sonner";
 import { IoMdAdd } from "react-icons/io";
 import { ProgressAuto } from "@/components/ui/progress";
 
+import { canPerformAction } from "@/utils/role";
+
+import {
+    GetDataSimple,
+    DeleteData,
+} from "@/service";
+
 const Users = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
-    const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
     const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
     const [activeTab, setActiveTab] = useState("all");
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -53,177 +60,75 @@ const Users = () => {
         id: number;
         name: string;
     } | null>(null);
+    const [users, setUsers] = useState<any[]>([]);
+    const [totalUsers, setTotalUsers] = useState(0);
+    const [loading, setLoading] = useState(true);
 
-    // Random badge colors
-    const badgeColors = [
-        "bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300",
-        "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300",
-        "bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-300",
-        "bg-pink-100 dark:bg-pink-900/20 text-pink-800 dark:text-pink-300",
-        "bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300",
-        "bg-indigo-100 dark:bg-indigo-900/20 text-indigo-800 dark:text-indigo-300",
-        "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300",
-        "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300",
-    ];
-
-    const getRandomBadgeColor = (index: number) => {
-        return badgeColors[index % badgeColors.length];
+    const roleMap: Record<number, string> = {
+        1: "Администратор",
+        2: "Бухгалтер",
+        3: "Зритель",
     };
-    const users = [
-        {
-            id: 1,
-            name: "Olivia Martin",
-            email: "olivia.martin@email.com",
-            phone: "+998 90 123-45-67",
-            role: "Admin",
-            status: "Active",
-            avatar: "/avatar-1.webp",
-        },
-        {
-            id: 2,
-            name: "Jackson Lee",
-            email: "jackson.lee@email.com",
-            phone: "+998 91 234-56-78",
-            role: "User",
-            status: "Active",
-            avatar: "/avatar-2.webp",
-        },
-        {
-            id: 3,
-            name: "Isabella Nguyen",
-            email: "isabella.nguyen@email.com",
-            phone: "+998 93 345-67-89",
-            role: "User",
-            status: "Inactive",
-            avatar: "/avatar-3.webp",
-        },
-        {
-            id: 4,
-            name: "William Kim",
-            email: "william.kim@email.com",
-            phone: "+998 94 456-78-90",
-            role: "Moderator",
-            status: "Active",
-            avatar: "/avatar-4.webp",
-        },
-        {
-            id: 5,
-            name: "Sofia Davis",
-            email: "sofia.davis@email.com",
-            phone: "+998 95 567-89-01",
-            role: "User",
-            status: "Active",
-            avatar: "/avatar-5.webp",
-        },
-        {
-            id: 6,
-            name: "Alexander Johnson",
-            email: "alexander.johnson@email.com",
-            phone: "+998 97 678-90-12",
-            role: "Admin",
-            status: "Active",
-            avatar: "/avatar-1.webp",
-        },
-        {
-            id: 7,
-            name: "Emma Wilson",
-            email: "emma.wilson@email.com",
-            phone: "+998 88 789-01-23",
-            role: "User",
-            status: "Inactive",
-            avatar: "/avatar-2.webp",
-        },
-        {
-            id: 8,
-            name: "Michael Brown",
-            email: "michael.brown@email.com",
-            phone: "+998 99 890-12-34",
-            role: "Moderator",
-            status: "Active",
-            avatar: "/avatar-3.webp",
-        },
-        {
-            id: 9,
-            name: "Sarah Garcia",
-            email: "sarah.garcia@email.com",
-            phone: "+998 90 901-23-45",
-            role: "User",
-            status: "Active",
-            avatar: "/avatar-4.webp",
-        },
-        {
-            id: 10,
-            name: "David Martinez",
-            email: "david.martinez@email.com",
-            phone: "+998 91 012-34-56",
-            role: "User",
-            status: "Inactive",
-            avatar: "/avatar-5.webp",
-        },
-        {
-            id: 11,
-            name: "Lisa Anderson",
-            email: "lisa.anderson@email.com",
-            phone: "+998 93 123-45-67",
-            role: "Admin",
-            status: "Active",
-            avatar: "/avatar-1.webp",
-        },
-        {
-            id: 12,
-            name: "James Taylor",
-            email: "james.taylor@email.com",
-            phone: "+998 94 234-56-78",
-            role: "User",
-            status: "Active",
-            avatar: "/avatar-2.webp",
-        },
-    ];
 
-    // Filter users by tab
-    const getFilteredUsersByTab = (users: any[]) => {
-        switch (activeTab) {
-            case "active":
-                return users.filter((user) => user.status === "Active");
-            case "inactive":
-                return users.filter((user) => user.status === "Inactive");
-            case "admin":
-                return users.filter((user) => user.role === "Admin");
-            case "moderator":
-                return users.filter((user) => user.role === "Moderator");
-            default:
-                return users;
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            const data = await GetDataSimple(
+                `api/user/list?page=${currentPage}&limit=${itemsPerPage}`
+            );
+            setUsers(data.result || []);
+            setTotalUsers(data.count || 0);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            toast.error("Ошибка при получении списка пользователей");
+        } finally {
+            setLoading(false);
         }
     };
 
-    // Search and pagination logic
-    const searchFilteredUsers = users.filter(
-        (user) =>
-            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.role.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    useEffect(() => {
+        fetchUsers();
+    }, [currentPage, itemsPerPage]);
 
-    const filteredUsers = getFilteredUsersByTab(searchFilteredUsers);
+    const getRoleBadgeColor = (roleId: number) => {
+        switch (roleId) {
+            case 1:
+                return "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300"; // Admin/Director
+            case 2:
+                return "bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300"; // Accountant
+            case 3:
+                return "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300"; // Viewer
+            default:
+                return "bg-gray-100 dark:bg-gray-900/20 text-gray-800 dark:text-gray-300";
+        }
+    };
 
-    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentUsers = filteredUsers.slice(startIndex, endIndex);
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+    };
+
+    const filteredUsers = users.filter((user) => {
+        const fullName = `${user.firstname || ""} ${user.lastname || ""} ${user.fathername || ""}`.toLowerCase();
+        const matchesSearch = 
+            fullName.includes(searchQuery.toLowerCase()) ||
+            (user.login || "").toLowerCase().includes(searchQuery.toLowerCase());
+        
+        if (activeTab === "all") return matchesSearch;
+        if (activeTab === "admin") return matchesSearch && Number(user.role_id) === 1;
+        if (activeTab === "accountant") return matchesSearch && Number(user.role_id) === 2;
+        if (activeTab === "viewer") return matchesSearch && Number(user.role_id) === 3;
+        return matchesSearch;
+    });
+
+    const totalPages = Math.ceil(totalUsers / itemsPerPage);
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
 
-    const handleSearch = (query: string) => {
-        setSearchQuery(query);
-        setCurrentPage(1); // Reset to first page when searching
-    };
-
     const handleItemsPerPageChange = (value: string) => {
         setItemsPerPage(Number(value));
-        setCurrentPage(1); // Reset to first page when changing items per page
+        setCurrentPage(1);
     };
 
     const handleSelectUser = (userId: number) => {
@@ -235,16 +140,16 @@ const Users = () => {
     };
 
     const handleSelectAll = () => {
-        if (selectedUsers.length === currentUsers.length) {
+        if (selectedUsers.length === filteredUsers.length) {
             setSelectedUsers([]);
         } else {
-            setSelectedUsers(currentUsers.map((user) => user.id));
+            setSelectedUsers(filteredUsers.map((user) => Number(user.user_id)));
         }
     };
 
     const handleTabChange = (value: string) => {
         setActiveTab(value);
-        setCurrentPage(1); // Reset to first page when changing tabs
+        setCurrentPage(1);
     };
 
     const openDeleteModal = (user: { id: number; name: string }) => {
@@ -252,12 +157,19 @@ const Users = () => {
         setIsDeleteOpen(true);
     };
 
-    const handleConfirmDelete = () => {
+    const handleConfirmDelete = async () => {
         if (userToDelete) {
-            toast.success("Пользователь удалён", {
-                description: `${userToDelete.name} успешно удалён.`,
-                duration: 2500,
-            });
+            try {
+                await DeleteData(`api/user/delete/${userToDelete.id}`);
+                toast.success("Пользователь удалён", {
+                    description: `${userToDelete.name} успешно удалён.`,
+                    duration: 2500,
+                });
+                fetchUsers();
+            } catch (error) {
+                console.error("Error deleting user:", error);
+                toast.error("Ошибка при удалении пользователя");
+            }
         }
         setIsDeleteOpen(false);
         setUserToDelete(null);
@@ -267,14 +179,8 @@ const Users = () => {
         setIsDeleteOpen(false);
         setUserToDelete(null);
     };
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        setTimeout(() => {
-            setLoading(false);
-        }, 500);
-    }, []);
 
-    if (loading) {
+    if (loading && users.length === 0) {
         return (
             <div className="h-[80vh] w-full flex justify-center items-center ">
                 <div className="w-[400px]">
@@ -288,6 +194,8 @@ const Users = () => {
         );
     }
 
+
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -298,11 +206,13 @@ const Users = () => {
                             Все пользователи
                         </h1>
                     </div>
-                    <Link to="/users/create">
-                        <Button className="bg-black text-white duration-300 hover:bg-black/70 rounded-xl ">
-                            <IoMdAdd className="w-3 h-3" /> Добавить
-                        </Button>
-                    </Link>
+                    {canPerformAction() && (
+                        <Link to="/users/create">
+                            <Button className="bg-black text-white duration-300 hover:bg-black/70 rounded-xl ">
+                                <IoMdAdd className="w-3 h-3" /> Добавить
+                            </Button>
+                        </Link>
+                    )}
                 </div>
                 <CustomBreadcrumb
                     items={[
@@ -320,87 +230,66 @@ const Users = () => {
                     className="border-b"
                 >
                     <TabsList className="flex justify-start w-full bg-transparent  p-0 h-auto ">
-                        <TabsTrigger
+                            <TabsTrigger
                             value="all"
                             className="rounded-none border-b-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2 py-3"
                         >
                             <span>Все</span>
                             <Badge
                                 variant="secondary"
-                                className={`${getRandomBadgeColor(
-                                    0
-                                )} text-xs px-2 py-0.5 rounded-lg`}
+                                className={`bg-gray-100 dark:bg-gray-900/20 text-gray-800 dark:text-gray-300 text-xs px-2 py-0.5 rounded-lg`}
                             >
-                                {users.length}
-                            </Badge>
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="active"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2 py-3"
-                        >
-                            <span>Активные</span>
-                            <Badge
-                                variant="secondary"
-                                className={`${getRandomBadgeColor(
-                                    1
-                                )} text-xs px-2 py-0.5 rounded-lg`}
-                            >
-                                {
-                                    users.filter(
-                                        (u: any) => u.status === "Active"
-                                    ).length
-                                }
-                            </Badge>
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="inactive"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2 py-3"
-                        >
-                            <span>Неактивные</span>
-                            <Badge
-                                variant="secondary"
-                                className={`${getRandomBadgeColor(
-                                    2
-                                )} text-xs px-2 py-0.5 rounded-lg`}
-                            >
-                                {
-                                    users.filter(
-                                        (u: any) => u.status === "Inactive"
-                                    ).length
-                                }
+                                {totalUsers}
                             </Badge>
                         </TabsTrigger>
                         <TabsTrigger
                             value="admin"
                             className="rounded-none border-b-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2 py-3"
                         >
-                            <span>Админы</span>
+                            <span>Директоры</span>
                             <Badge
                                 variant="secondary"
-                                className={`${getRandomBadgeColor(
-                                    3
+                                className={`${getRoleBadgeColor(
+                                    1
                                 )} text-xs px-2 py-0.5 rounded-lg`}
                             >
                                 {
-                                    users.filter((u: any) => u.role === "Admin")
+                                    users.filter((u: any) => Number(u.role_id) === 1)
                                         .length
                                 }
                             </Badge>
                         </TabsTrigger>
                         <TabsTrigger
-                            value="moderator"
+                            value="accountant"
                             className="rounded-none border-b-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2 py-3"
                         >
-                            <span>Модераторы</span>
+                            <span>Бухгалтеры</span>
                             <Badge
                                 variant="secondary"
-                                className={`${getRandomBadgeColor(
-                                    4
+                                className={`${getRoleBadgeColor(
+                                    2
+                                )} text-xs px-2 py-0.5 rounded-lg`}
+                            >
+                                {
+                                    users.filter((u: any) => Number(u.role_id) === 2)
+                                        .length
+                                }
+                            </Badge>
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="viewer"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2 py-3"
+                        >
+                            <span>Зрители</span>
+                            <Badge
+                                variant="secondary"
+                                className={`${getRoleBadgeColor(
+                                    3
                                 )} text-xs px-2 py-0.5 rounded-lg`}
                             >
                                 {
                                     users.filter(
-                                        (u: any) => u.role === "Moderator"
+                                        (u: any) => Number(u.role_id) === 3
                                     ).length
                                 }
                             </Badge>
@@ -429,8 +318,8 @@ const Users = () => {
                                     <Checkbox
                                         checked={
                                             selectedUsers.length ===
-                                                currentUsers.length &&
-                                            currentUsers.length > 0
+                                                filteredUsers.length &&
+                                            filteredUsers.length > 0
                                         }
                                         onCheckedChange={handleSelectAll}
                                     />
@@ -439,13 +328,10 @@ const Users = () => {
                                     Пользователь
                                 </TableHead>
                                 <TableHead className="text-maintx dark:text-white">
-                                    Телефон
+                                    Логин
                                 </TableHead>
                                 <TableHead className="text-maintx dark:text-white">
                                     Роль
-                                </TableHead>
-                                <TableHead className="text-maintx dark:text-white">
-                                    Статус
                                 </TableHead>
                                 <TableHead className="text-right text-maintx dark:text-white">
                                     Действия
@@ -453,86 +339,83 @@ const Users = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {currentUsers.map((user) => (
+                            {filteredUsers.map((user: any) => (
                                 <TableRow
-                                    key={user.id}
+                                    key={user.user_id}
                                     className="border-dashed border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
                                 >
                                     <TableCell className="w-12">
                                         <Checkbox
                                             checked={selectedUsers.includes(
-                                                user.id
+                                                Number(user.user_id)
                                             )}
                                             onCheckedChange={() =>
-                                                handleSelectUser(user.id)
+                                                handleSelectUser(Number(user.user_id))
                                             }
                                         />
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center space-x-3">
-                                            <div className="w-10 h-10 rounded-full overflow-hidden">
-                                                <img
-                                                    src={user.avatar}
-                                                    alt={user.name}
-                                                    className="w-full h-full object-cover"
-                                                />
+                                            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                                                <span className="text-sm font-bold text-gray-500 uppercase">
+                                                    {user.firstname?.[0]}
+                                                    {user.lastname?.[0]}
+                                                </span>
                                             </div>
                                             <div>
                                                 <Link
-                                                    to={`/details/${user.id}`}
+                                                    to={`/details/${user.user_id}`}
                                                     className="text-sm font-medium text-gray-900 dark:text-white hover:underline cursor-pointer transition-all duration-200"
                                                 >
-                                                    {user.name}
+                                                    {user.lastname} {user.firstname} {user.fathername}
                                                 </Link>
-                                                <p className="text-xs text-gray-400">
-                                                    {user.email}
-                                                </p>
                                             </div>
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-gray-600 dark:text-gray-300">
-                                        {user.phone}
-                                    </TableCell>
-                                    <TableCell className="text-gray-600 dark:text-gray-300">
-                                        {user.role}
+                                        {user.login}
                                     </TableCell>
                                     <TableCell>
                                         <Badge
-                                            variant={
-                                                user.status === "Active"
-                                                    ? "success"
-                                                    : "warning"
-                                            }
+                                            className={`${getRoleBadgeColor(Number(user.role_id))} border-none shadow-none`}
                                         >
-                                            {user.status}
+                                            {user.role_name || roleMap[Number(user.role_id)] || "Неизвестно"}
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <EditUser />
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <button className="rounded-full outline-none focus:outline-none focus:ring-0 focus:border-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-0 hover:bg-gray-200 p-2 transition-colors duration-200">
-                                                    <HiDotsVertical className="w-4 h-4 text-gray-500" />
-                                                </button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem
-                                                    className="flex items-center gap-2 text-red-600 hover:text-red-600"
-                                                    onClick={() =>
-                                                        openDeleteModal(user)
-                                                    }
-                                                >
-                                                    <CiTrash className="w-4 h-4" />
-                                                    <span>Удалить</span>
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        {canPerformAction() && (
+                                            <>
+                                                <EditUser user={user} onSuccess={fetchUsers} />
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <button className="rounded-full outline-none focus:outline-none focus:ring-0 focus:border-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-0 hover:bg-gray-200 p-2 transition-colors duration-200">
+                                                            <HiDotsVertical className="w-4 h-4 text-gray-500" />
+                                                        </button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem
+                                                            className="flex items-center gap-2 text-red-600 hover:text-red-600"
+                                                            onClick={() =>
+                                                                openDeleteModal({
+                                                                    id: Number(user.user_id),
+                                                                    name: `${user.lastname} ${user.firstname}`
+                                                                })
+                                                            }
+                                                        >
+                                                            <CiTrash className="w-4 h-4" />
+                                                            <span>Удалить</span>
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </CardContent>
+
                 <CardFooter className="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-4">
                     <div className="flex items-center gap-2">
                         <label htmlFor="" className="text-gray-500 text-sm">
@@ -569,7 +452,7 @@ const Users = () => {
                 confirmText="Удалить"
                 cancelText="Отмена"
                 confirmBg="bg-red-500"
-                confirmBgHover="bg-red-500/70"
+                confirmBgHover="bg-red-600"
                 onConfirm={handleConfirmDelete}
                 onCancel={handleCancelDelete}
                 size="md"

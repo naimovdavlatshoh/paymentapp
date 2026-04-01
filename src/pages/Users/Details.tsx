@@ -13,6 +13,7 @@ import {
     IoChatbubbleOutline,
     IoShareOutline,
 } from "react-icons/io5";
+import { canPerformAction } from "@/utils/role";
 
 const Details = () => {
     return (
@@ -121,45 +122,47 @@ const Details = () => {
                     {/* Right Column - Posts */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Create Post */}
-                        <Card className="bg-white dark:bg-gray-800 shadow-sm rounded-2xl">
-                            <CardContent className="p-6">
-                                <div className="flex gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-mainbg to-dark-blue-500 flex items-center justify-center text-white font-semibold">
-                                        JF
-                                    </div>
-                                    <div className="flex-1">
-                                        <textarea
-                                            placeholder="Share what you are thinking here..."
-                                            className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-mainbg bg-transparent text-gray-900 dark:text-white placeholder-gray-500"
-                                            rows={3}
-                                        />
-                                        <div className="flex items-center justify-between mt-4">
-                                            <div className="flex gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="text-gray-600 dark:text-gray-400"
-                                                >
-                                                    <HiPhotograph className="w-4 h-4 mr-2" />
-                                                    Image/Video
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="text-gray-600 dark:text-gray-400"
-                                                >
-                                                    <HiVideoCamera className="w-4 h-4 mr-2" />
-                                                    Streaming
+                        {canPerformAction() && (
+                            <Card className="bg-white dark:bg-gray-800 shadow-sm rounded-2xl">
+                                <CardContent className="p-6">
+                                    <div className="flex gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-mainbg to-dark-blue-500 flex items-center justify-center text-white font-semibold">
+                                            JF
+                                        </div>
+                                        <div className="flex-1">
+                                            <textarea
+                                                placeholder="Share what you are thinking here..."
+                                                className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-mainbg bg-transparent text-gray-900 dark:text-white placeholder-gray-500"
+                                                rows={3}
+                                            />
+                                            <div className="flex items-center justify-between mt-4">
+                                                <div className="flex gap-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-gray-600 dark:text-gray-400"
+                                                    >
+                                                        <HiPhotograph className="w-4 h-4 mr-2" />
+                                                        Image/Video
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-gray-600 dark:text-gray-400"
+                                                    >
+                                                        <HiVideoCamera className="w-4 h-4 mr-2" />
+                                                        Streaming
+                                                    </Button>
+                                                </div>
+                                                <Button className="bg-mainbg hover:bg-mainbg/90 text-white rounded-xl">
+                                                    Post
                                                 </Button>
                                             </div>
-                                            <Button className="bg-mainbg hover:bg-mainbg/90 text-white rounded-xl">
-                                                Post
-                                            </Button>
                                         </div>
                                     </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                </CardContent>
+                            </Card>
+                        )}
 
                         {/* Sample Post */}
                         <Card className="bg-white dark:bg-gray-800 shadow-sm rounded-2xl">
@@ -200,32 +203,34 @@ const Details = () => {
                                 </div>
 
                                 {/* Post Actions */}
-                                <div className="flex items-center gap-6 pt-4 border-t border-gray-100 dark:border-gray-700">
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="text-gray-600 dark:text-gray-400 hover:text-red-500"
-                                    >
-                                        <IoHeartOutline className="w-4 h-4 mr-2" />
-                                        Like
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="text-gray-600 dark:text-gray-400"
-                                    >
-                                        <IoChatbubbleOutline className="w-4 h-4 mr-2" />
-                                        Comment
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="text-gray-600 dark:text-gray-400"
-                                    >
-                                        <IoShareOutline className="w-4 h-4 mr-2" />
-                                        Share
-                                    </Button>
-                                </div>
+                                {canPerformAction() && (
+                                    <div className="flex items-center gap-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="text-gray-600 dark:text-gray-400 hover:text-red-500"
+                                        >
+                                            <IoHeartOutline className="w-4 h-4 mr-2" />
+                                            Like
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="text-gray-600 dark:text-gray-400"
+                                        >
+                                            <IoChatbubbleOutline className="w-4 h-4 mr-2" />
+                                            Comment
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="text-gray-600 dark:text-gray-400"
+                                        >
+                                            <IoShareOutline className="w-4 h-4 mr-2" />
+                                            Share
+                                        </Button>
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
                     </div>
