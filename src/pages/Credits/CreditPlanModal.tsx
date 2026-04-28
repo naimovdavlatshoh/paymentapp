@@ -13,6 +13,7 @@ import CustomModal from "@/components/ui/custom-modal";
 import { ProgressAuto } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { showErrorToast } from "@/utils/toast-utils";
+import { CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
 interface PlanItem {
     id: string | number;
@@ -74,11 +75,15 @@ const CreditPlanModal = ({ isOpen, onClose, creditId }: CreditPlanModalProps) =>
     };
 
     const getStatusColor = (status: string | number) => {
-        switch (status.toString()) {
-            case "1": return "success";   // Оплачено
-            case "2": return "secondary"; // Частично
-            default: return "warning";    // Не оплачено
-        }
+        if (status == "1") return "yellow";   // Оплачено
+        if (status == "2") return "success"; // Частично
+        return "warning";    // Не оплачено
+    };
+
+    const getStatusIcon = (status: string | number) => {
+        if (status == "1") return <CheckCircle2 className="w-3.5 h-3.5" />;
+        if (status == "2") return <Clock className="w-3.5 h-3.5" />;
+        return <AlertCircle className="w-3.5 h-3.5" />;
     };
 
     return (
@@ -91,7 +96,7 @@ const CreditPlanModal = ({ isOpen, onClose, creditId }: CreditPlanModalProps) =>
             onConfirm={onClose}
             onCancel={onClose}
             maxWidth="900px"
-            showCloseButton={true}
+            showCloseButton={false}
         >
             {loading ? (
                 <div className="py-20 h-[300px] flex items-center justify-center">
@@ -157,7 +162,10 @@ const CreditPlanModal = ({ isOpen, onClose, creditId }: CreditPlanModalProps) =>
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <Badge variant={getStatusColor(item.payment_status)}>
-                                                    {item.payment_status_text}
+                                                    <span className="flex items-center gap-1">
+                                                        {getStatusIcon(item.payment_status)}
+                                                        {item.payment_status_text}
+                                                    </span>
                                                 </Badge>
                                             </TableCell>
                                         </TableRow>

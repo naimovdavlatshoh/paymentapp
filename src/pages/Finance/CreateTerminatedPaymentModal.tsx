@@ -14,7 +14,17 @@ import CustomModal from "@/components/ui/custom-modal";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { showErrorToast } from "@/utils/toast-utils";
-import { User, Home, Hash, Calendar, Banknote, Loader2 } from "lucide-react";
+import {
+    User,
+    Home,
+    Hash,
+    Calendar,
+    Banknote,
+    Loader2,
+    CheckCircle2,
+    Clock,
+    AlertCircle,
+} from "lucide-react";
 
 interface TerminatedContract {
     terminated_contract_id: string;
@@ -139,9 +149,15 @@ const CreateTerminatedPaymentModal = ({ isOpen, selectedContractId, onClose, onS
     };
 
     const getStatusCls = (status: string) => {
-        if (status === "2") return "border-green-300 text-green-600 bg-green-50 dark:border-green-600 dark:text-green-400 dark:bg-green-900/10";
-        if (status === "1") return "border-yellow-300 text-yellow-600 bg-yellow-50 dark:border-yellow-600 dark:text-yellow-400 dark:bg-yellow-900/10";
+        if (status == "2") return "border-green-300 text-green-600 bg-green-50 dark:border-green-600 dark:text-green-400 dark:bg-green-900/10";
+        if (status == "1") return "border-yellow-300 text-yellow-600 bg-yellow-50 dark:border-yellow-600 dark:text-yellow-400 dark:bg-yellow-900/10";
         return "border-red-300 text-red-600 bg-red-50 dark:border-red-600 dark:text-red-400 dark:bg-red-900/10";
+    };
+
+    const getStatusIcon = (status: string) => {
+        if (status == "2") return <CheckCircle2 className="w-3.5 h-3.5" />;
+        if (status == "1") return <Clock className="w-3.5 h-3.5" />;
+        return <AlertCircle className="w-3.5 h-3.5" />;
     };
 
     /* ── Validation ─────────────────────────────────────────────────── */
@@ -278,7 +294,10 @@ const CreateTerminatedPaymentModal = ({ isOpen, selectedContractId, onClose, onS
                                                 </td>
                                                 <td className="px-3 py-2">
                                                     <Badge variant="outline" className={`text-xs whitespace-nowrap ${getStatusCls(p.payment_status)}`}>
-                                                        {p.payment_status_text}
+                                                        <span className="flex items-center gap-1">
+                                                            {getStatusIcon(p.payment_status)}
+                                                            {p.payment_status_text}
+                                                        </span>
                                                     </Badge>
                                                 </td>
                                             </tr>

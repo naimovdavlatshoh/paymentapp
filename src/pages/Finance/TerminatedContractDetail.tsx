@@ -24,6 +24,9 @@ import {
     Banknote,
     ListChecks,
     ArrowLeft,
+    CheckCircle2,
+    Clock,
+    AlertCircle,
 } from "lucide-react";
 
 interface PriceItem {
@@ -122,9 +125,15 @@ const TerminatedContractDetail = () => {
         ({ "1": "Наличные", "2": "Безналичные" }[type] ?? type);
 
     const getPaymentStatusCls = (status: string) => {
-        if (status === "2") return "border-green-300 text-green-600 dark:border-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/10";
-        if (status === "1") return "border-yellow-300 text-yellow-600 dark:border-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/10";
+        if (status == "2") return "border-green-300 text-green-600 dark:border-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/10";
+        if (status == "1") return "border-yellow-300 text-yellow-600 dark:border-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/10";
         return "border-red-300 text-red-600 dark:border-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10";
+    };
+
+    const getPaymentStatusIcon = (status: string) => {
+        if (status == "2") return <CheckCircle2 className="w-3.5 h-3.5" />;
+        if (status == "1") return <Clock className="w-3.5 h-3.5" />;
+        return <AlertCircle className="w-3.5 h-3.5" />;
     };
 
     /* ── Loading ──────────────────────────────────────────────────── */
@@ -309,7 +318,10 @@ const TerminatedContractDetail = () => {
                                                     variant="outline"
                                                     className={`text-xs whitespace-nowrap ${getPaymentStatusCls(item.payment_status)}`}
                                                 >
-                                                    {item.payment_status_text}
+                                                    <span className="flex items-center gap-1">
+                                                        {getPaymentStatusIcon(item.payment_status)}
+                                                        {item.payment_status_text}
+                                                    </span>
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-gray-500 dark:text-gray-400 text-sm whitespace-nowrap">

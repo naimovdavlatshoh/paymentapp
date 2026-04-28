@@ -19,6 +19,7 @@ import { HiDotsVertical } from "react-icons/hi";
 import { IoStatsChart } from "react-icons/io5";
 import { MdOutlineSwapHoriz } from "react-icons/md";
 import { isAccountant } from "@/utils/role";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 
 // Types
 interface Balance {
@@ -204,7 +205,14 @@ const Accountlist = () => {
                                                         }
                                                         className="bg-white/20 mb-3 backdrop-blur-sm text-white border-white/30"
                                                     >
-                                                        {account.is_active_text}
+                                                        <span className="flex items-center gap-1">
+                                                            {account.is_active === "1" ? (
+                                                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                                            ) : (
+                                                                <AlertCircle className="w-3.5 h-3.5" />
+                                                            )}
+                                                            {account.is_active_text}
+                                                        </span>
                                                     </Badge>
                                                 )}
                                                 <h3 className="text-xl font-bold mb-1 line-clamp-1">

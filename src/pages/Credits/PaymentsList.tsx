@@ -26,7 +26,7 @@ interface Payment {
     credit_id: number;
     credit_name: string;
     payment_amount: string;
-    payment_method_name: string;
+    payment_method_text: string;
     comments: string | null;
     created_at: string;
 }
@@ -47,8 +47,8 @@ const PaymentsList = () => {
         try {
             const response = await GetDataSimple("api/finance/accounts?page=1&limit=100");
             if (response && response.result) {
-                const acc = response.result.find((a: any) => 
-                    a.name.toLowerCase().includes("кредит") || 
+                const acc = response.result.find((a: any) =>
+                    a.name.toLowerCase().includes("кредит") ||
                     a.code.toLowerCase().includes("кредит")
                 );
                 setKreditAccount(acc);
@@ -91,7 +91,7 @@ const PaymentsList = () => {
 
     const confirmDelete = async () => {
         if (!paymentToDelete) return;
-        
+
         try {
             const response = await DeleteData(`api/finance/credits/payments/${paymentToDelete}`);
             if (response) {
@@ -131,7 +131,7 @@ const PaymentsList = () => {
                         </div>
                     )}
                     {canPerformAction() && (
-                        <Button 
+                        <Button
                             onClick={() => setIsCreateModalOpen(true)}
                             className="bg-maintx text-white hover:bg-maintx/80 rounded-xl"
                         >
@@ -174,15 +174,15 @@ const PaymentsList = () => {
                                             <TableCell className="whitespace-nowrap font-bold text-maintx dark:text-white">
                                                 {formatPrice(payment.payment_amount)} <span className="text-xs font-normal">сум</span>
                                             </TableCell>
-                                            <TableCell>{payment.payment_method_name}</TableCell>
+                                            <TableCell>{payment.payment_method_text}</TableCell>
                                             <TableCell className="max-w-[200px] truncate">{payment.comments || "—"}</TableCell>
                                             <TableCell className="whitespace-nowrap">
                                                 {new Date(payment.created_at).toLocaleDateString("ru-RU")}
                                             </TableCell>
                                             {canPerformAction() && (
                                                 <TableCell className="text-right px-6">
-                                                    <Button 
-                                                        variant="ghost" 
+                                                    <Button
+                                                        variant="ghost"
                                                         size="sm"
                                                         className="rounded-lg hover:bg-red-50 hover:text-red-500 text-gray-400"
                                                         onClick={() => handleDelete(payment.id)}
@@ -200,7 +200,7 @@ const PaymentsList = () => {
                 </CardContent>
                 {totalPages > 1 && (
                     <div className="p-4 border-t border-gray-100 dark:border-gray-700">
-                        <CustomPagination 
+                        <CustomPagination
                             currentPage={currentPage}
                             totalPages={totalPages}
                             onPageChange={setCurrentPage}
@@ -209,7 +209,7 @@ const PaymentsList = () => {
                 )}
             </Card>
 
-            <CreatePaymentModal 
+            <CreatePaymentModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 onSuccess={fetchPayments}

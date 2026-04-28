@@ -109,10 +109,10 @@ const Users = () => {
 
     const filteredUsers = users.filter((user) => {
         const fullName = `${user.firstname || ""} ${user.lastname || ""} ${user.fathername || ""}`.toLowerCase();
-        const matchesSearch = 
+        const matchesSearch =
             fullName.includes(searchQuery.toLowerCase()) ||
             (user.login || "").toLowerCase().includes(searchQuery.toLowerCase());
-        
+
         if (activeTab === "all") return matchesSearch;
         if (activeTab === "admin") return matchesSearch && Number(user.role_id) === 1;
         if (activeTab === "accountant") return matchesSearch && Number(user.role_id) === 2;
@@ -364,7 +364,7 @@ const Users = () => {
                                             </div>
                                             <div>
                                                 <Link
-                                                    to={`/details/${user.user_id}`}
+                                                    to={`/users`}
                                                     className="text-sm font-medium text-gray-900 dark:text-white hover:underline cursor-pointer transition-all duration-200"
                                                 >
                                                     {user.lastname} {user.firstname} {user.fathername}

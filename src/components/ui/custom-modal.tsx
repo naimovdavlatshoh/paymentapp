@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -134,6 +134,12 @@ const CustomModal: React.FC<CustomModalProps> = ({
         handleOpenChange(false);
     };
 
+    const [showCancelButton, setShowCancelButton] = useState(true);
+    useEffect(() => {
+        setShowCancelButton(showCloseButton);
+        console.log(showCloseButton);
+    }, [showCancelButton]);
+
     const modalContent = (
         <Dialog open={actualOpen} onOpenChange={handleOpenChange}>
             {showTrigger && (
@@ -160,13 +166,15 @@ const CustomModal: React.FC<CustomModalProps> = ({
                     <DialogFooter>
                         {footerContent || (
                             <>
-                                <Button
-                                    variant="outline"
-                                    onClick={handleCancel}
-                                    className="text-gray-600 dark:text-gray-300 rounded-xl"
-                                >
-                                    {cancelText}
-                                </Button>
+                                {showCancelButton && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleCancel}
+                                        className="text-gray-600 dark:text-gray-300 rounded-xl"
+                                    >
+                                        {cancelText}
+                                    </Button>
+                                )}
                                 <Button
                                     className={`rounded-xl ${confirmBg} text-white duration-300 hover:${confirmBgHover}`}
                                     variant={confirmVariant}
